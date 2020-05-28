@@ -23,8 +23,15 @@ class Main extends React.Component
         await Font.loadAsync({
           Roboto: require('native-base/Fonts/Roboto.ttf'),
           Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+          Cairo_Black: require('../assets/fonts/Cairo_Black.ttf'),
+          Cairo_Regular: require('../assets/fonts/Cairo-Regular.ttf'),
+
+
+          
+          
           ...Ionicons.font,
         });
+        
         this.setState({ isReady: true });
       }
      
@@ -45,7 +52,7 @@ class Main extends React.Component
                 </Button>
               </Left>
               <Body>
-                <Title style={{fontSize:18}}>Wendesday</Title>
+                <Title style={{fontSize:18,fontFamily: 'Cairo_Black'}}>Wendesday</Title>
                 </Body>
               <Right>
                 <Button transparent>
@@ -54,7 +61,7 @@ class Main extends React.Component
               </Right>
             </Header>
             <Content>
-            <Text style={{marginLeft:"2%",marginTop:"2%"}}>
+            <Text style={{marginLeft:"2%",marginTop:"2%",fontFamily: 'Cairo_Regular'}}>
                 Today Expencise
             </Text>
             <Card>
@@ -83,7 +90,7 @@ class Main extends React.Component
          </Card>
             
 
-            <View style={{margin:"2%"}}>
+            <View style={{margin:"2%",fontFamily: 'Cairo_Regular'}}>
                 <Text>
                     items you bought
                 </Text>
@@ -163,9 +170,10 @@ const styles = StyleSheet.create({
   },
   card_titles:{
     fontSize:18,
+    fontFamily: 'Cairo_Regular'
   },
   card_data:{
     fontSize:20,
-    fontWeight:"800"
+    fontFamily: 'Cairo_Regular'
   }
 });
