@@ -1,0 +1,17 @@
+{
+  "name": "expensesTracker",
+  "displayName": "expensesTracker",
+  "expo": {
+    "name": "expensesTracker",
+    "slug": "expensesTracker",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
