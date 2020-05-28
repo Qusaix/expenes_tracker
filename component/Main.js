@@ -25,6 +25,8 @@ class Main extends React.Component
           Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
           Cairo_Black: require('../assets/fonts/Cairo_Black.ttf'),
           Cairo_Regular: require('../assets/fonts/Cairo-Regular.ttf'),
+          Cairo_Bold: require('../assets/fonts/Cairo-Bold.ttf'),
+
 
 
           
@@ -174,6 +176,6 @@ const styles = StyleSheet.create({
   },
   card_data:{
     fontSize:20,
-    fontFamily: 'Cairo_Regular'
+    fontFamily: 'Cairo_Bold',
   }
 });
