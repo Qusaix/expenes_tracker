@@ -3,8 +3,10 @@ import { AppLoading } from 'expo';
 import { Container, Header, Left, Body, Right, Button, Icon, Title , Text , Content ,Card, CardItem , List , ListItem ,Thumbnail , Fab } from 'native-base';
 import * as Font from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet , View , Dimensions} from "react-native";
+import { StyleSheet , View , Dimensions , TouchableOpacity } from "react-native";
 import { LineChart } from "react-native-chart-kit";
+import { SwipeListView } from 'react-native-swipe-list-view'; /** Delete this packiage */
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 
 const screenWidth = Dimensions.get("window").width/1.1;
@@ -36,11 +38,6 @@ const chartConfig = {
 
 
 
-const instructions = Platform.select({
-  ios: `Press Cmd+R to reload,\nCmd+D or shake for dev menu`,
-  android: `Double tap R on your keyboard to reload,\nShake or press menu button for dev menu`,
-});
-
 class Main extends React.Component
 {
     constructor(props) {
@@ -53,12 +50,15 @@ class Main extends React.Component
             {"id":2,"image":"https://hips.hearstapps.com/vidthumb/images/delish-u-rice-2-1529079587.jpg",'name':"Rice",'note':"Bring 10KGs of Rice","price":70,'amout':1},
             {"id":3,"image":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Red_Apple.jpg/661px-Red_Apple.jpg",'name':"Apple",'note':"Bring 1Kg of Apples","price":50,'amout':1},
             {"id":4,"image":"https://images-na.ssl-images-amazon.com/images/I/71qyzy9QnML._SL1500_.jpg",'name':"Oats ",'note':"One Can of Oats","price":15,'amout':5},
-            {"id":5,"image":"https://images-na.ssl-images-amazon.com/images/I/71xnxlsfqOL._AC_SX425_.jpg",'name':"Protien ",'note':"ON Marka","price":50,'amout':1},
+            {"id":5,"image":"https://images-na.ssl-images-amazon.com/images/I/71xnxlsfqOL._AC_SX425_.jpg",'name':"Protien ",'note':"ON Marka","price":25,'amout':1},
             {"id":6,"image":"https://www.bbcgoodfood.com/sites/default/files/recipe-collections/collection-image/2013/05/spaghetti-puttanesca_1.jpg",'name':"Pasta ",'note':"4 Pices of Pasta","price":1,'amout':4},
+            {"id":7,"image":"https://static.webteb.net/images/content/ramadanrecipe_recipe_5_719.jpg",'name':"ملوخيه ",'note':"اربعه كيلو","price":25,'amout':4},
         ],
         today_expenses:0,
         today_limit:100, 
         above_limit:"green",
+        showAlert: false,
+        chosen_item_index:null,
         };
       }
      
@@ -69,6 +69,8 @@ class Main extends React.Component
           Cairo_Black: require('../assets/fonts/Cairo_Black.ttf'),
           Cairo_Regular: require('../assets/fonts/Cairo-Regular.ttf'),
           Cairo_Bold: require('../assets/fonts/Cairo-Bold.ttf'),
+          Cairo_SemiBold: require('../assets/fonts/Cairo-SemiBold.ttf'),
+
 
 
 
@@ -100,6 +102,37 @@ class Main extends React.Component
             })
           }
       }
+
+      _removeItem = ()=>{
+       
+        let items_array = this.state.items;
+        let index = this.state.chosen_item_index;
+        const check_item = items_array.indexOf(index)
+        let color;
+       
+        if(check_item === -1) 
+        { 
+          items_array.splice(index,1);
+
+           this.setState({
+            items:items_array,
+            today_expenses:this.state.items.sum('price'),
+            showAlert:false,
+          });
+          
+
+          if(items_array.sum('price') >  this.state.today_limit )
+          {
+            color = "red";
+          }
+          else
+          {
+            color = "green";
+          }
+
+          return this.setState({above_limit:color})
+        }
+      }
      
       render() {
         if (!this.state.isReady) {
@@ -123,11 +156,15 @@ class Main extends React.Component
               <Right>
                 <Button transparent>
                   <Icon name='menu' />
+                  {/* <Text style={{fontSize:20,fontFamily:"Cairo_Bold"}}>
+                   Fri 01
+                  </Text> */}
+
                 </Button>
               </Right>
             </Header>
             <Content>
-            <Text style={{marginLeft:"2%",marginTop:"2%",fontFamily: 'Cairo_Regular'}}>
+            <Text style={{marginLeft:"2%",marginTop:"2%",fontFamily: 'Cairo_SemiBold'}}>
                 Today Expencise
             </Text>
             <Card>
@@ -182,34 +219,36 @@ class Main extends React.Component
          </Card>
             
 
-            <View style={{margin:"2%",fontFamily: 'Cairo_Regular'}}>
-                <Text style={{fontFamily: 'Cairo_Regular'}}>
+            <View style={{margin:"2%"}}>
+                <Text style={{fontFamily: 'Cairo_SemiBold'}}>
                     Today Items List
                 </Text>
                 <List>
 
-                 {this.state.items.map((item)=>{
+                 {this.state.items.map((item , index)=>{
                    return(
                     <ListItem key={item.id} avatar>
                     <Left>
                       <Thumbnail source={{ uri: item.image }} />
                     </Left>
                     <Body>
-                      <Text>{ item.name }</Text>
-                      <Text note>{ item.note }</Text>
+                      <Text style={{fontFamily:"Cairo_SemiBold"}} >{ item.name }</Text>
+                      <Text style={{fontFamily:"Cairo_SemiBold"}} note>{ item.note }</Text>
                     </Body>
                     <Right>
                       <Text note>{ item.price }$</Text>
-                      <Text >X{ item.amout }</Text>
+                      {/* <Text >X{ item.amout }</Text> */}
+                      <TouchableOpacity onPress={()=>{this.setState({showAlert:true,chosen_item_index:index})}} ><Text><Icon size={1} name='trash' /></Text></TouchableOpacity>
                     </Right>
                   </ListItem>
                    )
                  })}
           </List>
             </View>
+            
 
            <View style={{margin:"2%",marginLeft:"3%"}}>
-           <Text style={{fontFamily: 'Cairo_Regular'}}>
+           <Text style={{fontFamily: 'Cairo_SemiBold'}}>
                     Week Expencises
                 </Text>
              <Card>
@@ -225,6 +264,7 @@ class Main extends React.Component
 
 
             </Content>
+
             <Fab
             active={this.state.active}
             direction="up"
@@ -240,6 +280,29 @@ class Main extends React.Component
                         <Icon name='nutrition' /> 
                 </Content>
             </Fab>
+
+
+            <AwesomeAlert
+          show={this.state.showAlert}
+          showProgress={false}
+          title="Warning!"
+          message="Are you sure you want to delete the item ?"
+          closeOnTouchOutside={false}
+          closeOnHardwareBackPress={true}
+          showCancelButton={true}
+          showConfirmButton={true}
+          cancelText="No, cancel"
+          confirmText="Yes, delete it"
+          confirmButtonColor="#DD6B55"
+          onCancelPressed={() => {
+           this.setState({showAlert:false})
+          }}
+          onConfirmPressed={() => {
+           this._removeItem()
+          }}
+        />
+
+
           </Container>
     
         );
