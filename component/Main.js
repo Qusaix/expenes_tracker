@@ -31,7 +31,8 @@ import { LineChart } from "react-native-chart-kit";
 import { SwipeListView } from 'react-native-swipe-list-view'; /** Delete this packiage */
 import AwesomeAlert from 'react-native-awesome-alerts';
 import DialogInput from 'react-native-dialog-input';
-
+import * as Localization from 'expo-localization';
+import i18n from 'i18n-js';
 
 
 const screenWidth = Dimensions.get("window").width/1.1;
@@ -59,6 +60,63 @@ const chartConfig = {
   barPercentage: 0.5,
   useShadowColorFromDataset: true // optional
 };
+
+// Set the key-value pairs for the different languages you want to support.
+i18n.translations = {
+  en: { 
+   back: 'Back',
+   name: 'Name' ,
+   note: 'Note',
+   price: 'Price',
+   add: 'Add',
+   expencese: 'Expencese',
+   today_expenses: 'Today Expencise',
+   expencese_counter:'Expencese',
+   less_then:'Less then',
+   today_items_list:'Today Items List',
+   no_items:'You Have No items Today',
+   you_can_add:'You Can Add Throw the Plus Sign',
+   week_expencises:'Week Expencises',
+   warning:"Warning!",
+   message:"are you sure you want to delete this item ?",
+   cancelText:"No, cancel",
+   confirmText:"Yes, delete it",
+   important:'Important!',
+   message_add_budget:'Please Add Your Daly Budget',
+   ex:"ex.50",
+   submit:"SUBMIT",
+   cancel:"CANCEL",
+
+  },
+  ar: {
+   back: 'رجوع',
+   name: 'عنوان' ,
+   note: 'ملاحظه',
+   price: 'السعر',
+   add: 'اضافة',
+   expencese: 'التكاليف',
+   today_expenses: 'تكالييف اليوم',
+   expencese_counter:'التكاليف',
+   less_then:'مصروف اليوم',
+   today_items_list:'قائمة تكاليف اليوم',
+   no_items:'لا يوجد اي عنصر اليوم',
+   you_can_add:'بمكانك اضافة عنصر جديد عن طريق علامة الزائد',
+   week_expencises:'تكاليف الاسبوع',
+   warning:"تحذير!",
+   message:"هل تريد حذف العنصر ؟",
+   cancelText:"لأ , اريد الالغاء",
+   confirmText:"نعم , اريد",
+   important:'مهم',
+   message_add_budget:'الرجاء اضافة ميزانتك اليوميه',
+   ex:"مثال.50",
+   submit:"اضافة",
+   cancel:"الغاء",
+  },
+};
+// Set the locale once at the beginning of your app.
+i18n.locale = Localization.locale;
+// When a value is missing from a language it'll fallback to another language with the key present.
+i18n.fallbacks = true;
 
 
 
@@ -423,8 +481,8 @@ class Main extends React.Component
                 </Button>
               </Left>
               <Body>
-                <Title style={{fontSize:18,fontFamily: 'Cairo_Black'}}>back</Title>
-                </Body>
+                <Title style={{fontSize:18,fontFamily: 'Cairo_Black'}}>{i18n.t('back')}</Title>
+              </Body>
               <Right>
                 <Button  transparent>
                   <Icon name='menu' />
@@ -442,14 +500,14 @@ class Main extends React.Component
               </View>
               <Form>
                 <Item>
-                  <Input   placeholder="Name" onChangeText={(data)=>{
+                  <Input   placeholder={i18n.t('name')} onChangeText={(data)=>{
                     this.setState({
                       new_item_name:data
                     })
                   }} />
                 </Item>
                 <Item>
-                  <Input placeholder="Note"  
+                  <Input placeholder={i18n.t('note')}  
                   onChangeText={(data)=>{
                     this.setState({
                       new_item_note:data
@@ -458,7 +516,7 @@ class Main extends React.Component
                   />
                 </Item>
                 <Item last>
-                  <Input keyboardType='numeric' placeholder="Price"  onChangeText={(data)=>{
+                  <Input keyboardType='numeric' placeholder={i18n.t('price')}  onChangeText={(data)=>{
                     this.setState({
                       new_item_price:data
                     })
@@ -479,7 +537,7 @@ class Main extends React.Component
                 }}
                 >
                     <Text style={{fontSize:18,fontFamily:"Cairo_SemiBold" , color:"#fff"}}>
-                     اضافة
+                    {i18n.t('add')}
                     </Text>
                   </TouchableOpacity>
               </View>
@@ -502,7 +560,7 @@ class Main extends React.Component
                 </Button>
               </Left>
               <Body>
-                <Title style={{fontSize:18,fontFamily: 'Cairo_Black'}}>Wallet</Title>
+                <Title style={{fontSize:18,fontFamily: 'Cairo_Black'}}>{i18n.t('expencese')}</Title>
                 </Body>
               <Right>
                 <Button onPress={()=>{
@@ -520,7 +578,7 @@ class Main extends React.Component
             </Header>
             <Content>
             <Text style={{marginLeft:"2%",marginTop:"2%",fontFamily: 'Cairo_SemiBold'}}>
-                Today Expencise
+                {i18n.t('today_expenses')}
             </Text>
             <Card>
             {/* <CardItem header>
@@ -540,7 +598,7 @@ class Main extends React.Component
                         </Text>
 
                         <Text style={styles.card_data}>
-                          Expencise
+                        {i18n.t('expencese_counter')}
                         </Text>
 
                   </View>
@@ -557,7 +615,7 @@ class Main extends React.Component
                         </Text>
 
                         <Text style={styles.card_data}>
-                         Less then
+                         {i18n.t('less_then')}
                         </Text>
 
                   </View>
@@ -576,7 +634,7 @@ class Main extends React.Component
 
             <View style={{margin:"2%"}}>
                 <Text style={{fontFamily: 'Cairo_SemiBold'}}>
-                    Today Items List
+                    {i18n.t('today_items_list')}
                 </Text>
                 <List>
 
@@ -584,10 +642,10 @@ class Main extends React.Component
                     <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
                       <MaterialCommunityIcons name={"emoticon-happy-outline"} size={50} style={{color:"gray"}} />
                         <Text style={{fontFamily: 'Cairo_Regular',fontSize:14,color:"gray"}}>
-                          You Have No items Today
+                        {i18n.t('no_items')}
                         </Text>
                         <Text style={{fontFamily: 'Cairo_Regular',fontSize:14,color:"gray"}}>
-                          You Can Add Throw the Plus Sign
+                        {i18n.t('you_can_add')}
                         </Text>
                     </View>
                   )
@@ -623,7 +681,7 @@ class Main extends React.Component
 
            <View style={{margin:"2%",marginLeft:"3%"}}>
            <Text style={{fontFamily: 'Cairo_SemiBold'}}>
-                    Week Expencises
+                   {i18n.t('week_expencises')}
                 </Text>
              <Card>
              <LineChart
@@ -704,17 +762,17 @@ class Main extends React.Component
             </Fab>
 
 
-            <AwesomeAlert
+          <AwesomeAlert
           show={this.state.showAlert}
           showProgress={false}
-          title="Warning!"
-          message="are you sure you want to delete this item ?"
+          title={i18n.t('warning')}
+          message={i18n.t('message')}
           closeOnTouchOutside={false}
           closeOnHardwareBackPress={true}
           showCancelButton={true}
           showConfirmButton={true}
-          cancelText="No, cancel"
-          confirmText="Yes, delete it"
+          cancelText={i18n.t('cancelText')}
+          confirmText={i18n.t('confirmText')}
           confirmButtonColor="#DD6B55"
           onCancelPressed={() => {
            this.setState({showAlert:false})
@@ -722,32 +780,16 @@ class Main extends React.Component
           onConfirmPressed={() => {
            this._removeItem()
           }}
-        />
-
-        <AwesomeAlert
-          show={this.state.userLimitAlert}
-          showProgress={false}
-          title="Warning!"
-          message="are you sure you want to delete this item ?"
-          closeOnTouchOutside={false}
-          closeOnHardwareBackPress={true}
-          showCancelButton={true}
-          showConfirmButton={true}
-          cancelText="No, cancel"
-          confirmText="Yes, delete it"
-          confirmButtonColor="#DD6B55"
-          onCancelPressed={() => {
-           this.setState({showAlert:false})
-          }}
-          onConfirmPressed={() => {
-           this._removeItem()
-          }}
+          titleStyle={{fontFamily:"Cairo_Bold"}}
+          messageStyle={{fontFamily:"Cairo_Regular"}}
+          cancelButtonTextStyle={{fontFamily:"Cairo_Regular"}}
+          confirmButtonTextStyle={{fontFamily:"Cairo_Regular"}}
         />
 
       <DialogInput isDialogVisible={this.state.isDialogVisible}
-                  title={"Important"}
-                  message={"Please Add Your Daly Budget"}
-                  hintInput ={"HINT INPUT"}
+                  title={i18n.t('important')}
+                  message={i18n.t('message_add_budget')}
+                  hintInput ={i18n.t('ex')}
                   submitInput={ (inputText) => {
                    
                     return this._takeTodaylimit( inputText );
