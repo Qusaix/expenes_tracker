@@ -25,7 +25,7 @@ import { Container,
 
   } from 'native-base';
 import * as Font from 'expo-font';
-import { Ionicons , Foundation , FontAwesome5 } from '@expo/vector-icons';
+import { Ionicons , FontAwesome5 , MaterialCommunityIcons} from '@expo/vector-icons';
 import { StyleSheet , View , Dimensions , TouchableOpacity } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { SwipeListView } from 'react-native-swipe-list-view'; /** Delete this packiage */
@@ -40,7 +40,7 @@ const data = {
   labels: ["Su", "Mo", "Tu", "We", "Th", "Fr","Sa"],
   datasets: [
     {
-      data: [20, 45, 28, 80, 99, 43 , 150],
+      data: [20, 45, 28, 80, 99, 43 , 5],
       color: (opacity = 2) => `rgba(0, 100, 0, ${opacity})`, // optional
       strokeWidth: 2 // optional
     }
@@ -91,6 +91,8 @@ class Main extends React.Component
         new_item_price:0,
         new_item_icon:"",
         new_item_color:"",
+        test_array:[],
+        no_items:true,
 
         
         };
@@ -121,7 +123,12 @@ class Main extends React.Component
           return total
       }
       
-
+        if(this.state.items.length > 0)
+        {
+          this.setState({
+            no_items:false
+          })
+        }
         
         
         this.setState({
@@ -164,6 +171,13 @@ class Main extends React.Component
             color = "green";
           }
 
+          if(this.state.items.length == 0)
+          {
+            this.setState({
+              no_items:true,
+            })
+          }
+
           return this.setState({above_limit:color})
         }
       }
@@ -190,6 +204,7 @@ class Main extends React.Component
          this.setState({
           items:all_items,
           today_expenses:equation,
+          no_items:false,
           add_item_screen:false
         });
 
@@ -384,27 +399,43 @@ class Main extends React.Component
                 </Text>
                 <List>
 
-                 {this.state.items.map((item , index)=>{
-                   return(
-                    <ListItem key={item.id} avatar>
-                    <Left>
-                      {/* <Thumbnail source={{ uri: item.image }} /> */}
-                      <Button style={{ backgroundColor: item.color , padding:25}}>
-                        <FontAwesome5  name={item.icon} size={19} style={{color:"#fff"}} />
-                    </Button>
-                    </Left>
-                    <Body>
-                      <Text style={{fontFamily:"Cairo_SemiBold"}} >{ item.name }</Text>
-                      <Text style={{fontFamily:"Cairo_SemiBold"}} note>{ item.note }</Text>
-                    </Body>
-                    <Right>
-                      <Text note>{ item.price }$</Text>
-                      {/* <Text >X{ item.amout }</Text> */}
-                      <TouchableOpacity onPress={()=>{this.setState({showAlert:true,chosen_item_index:index})}} ><Text><Icon size={1} name='trash' /></Text></TouchableOpacity>
-                    </Right>
-                  </ListItem>
-                   )
-                 })}
+                  {this.state.no_items ? (
+                    <View style={{flex:1,justifyContent:"center",alignItems:"center"}}>
+                      <MaterialCommunityIcons name={"emoticon-happy-outline"} size={50} style={{color:"gray"}} />
+                        <Text style={{fontFamily: 'Cairo_Regular',fontSize:14,color:"gray"}}>
+                          You Have No items Today
+                        </Text>
+                        <Text style={{fontFamily: 'Cairo_Regular',fontSize:14,color:"gray"}}>
+                          You Can Add Throw the Plus Sign
+                        </Text>
+                    </View>
+                  )
+                :(
+                  this.state.items.map((item , index)=>{
+
+                    return(
+                     <ListItem key={item.id} avatar>
+                     <Left>
+                       {/* <Thumbnail source={{ uri: item.image }} /> */}
+                       <Button style={{ backgroundColor: item.color , padding:25}}>
+                         <FontAwesome5  name={item.icon} size={19} style={{color:"#fff"}} />
+                     </Button>
+                     </Left>
+                     <Body>
+                       <Text style={{fontFamily:"Cairo_SemiBold"}} >{ item.name }</Text>
+                       <Text style={{fontFamily:"Cairo_SemiBold"}} note>{ item.note }</Text>
+                     </Body>
+                     <Right>
+                       <Text note>{ item.price }$</Text>
+                       {/* <Text >X{ item.amout }</Text> */}
+                       <TouchableOpacity onPress={()=>{this.setState({showAlert:true,chosen_item_index:index})}} ><Text><Icon size={1} name='trash' /></Text></TouchableOpacity>
+                     </Right>
+                   </ListItem>
+                    )
+                  })
+                )}
+
+                 
           </List>
             </View>
             
@@ -487,7 +518,7 @@ class Main extends React.Component
           show={this.state.showAlert}
           showProgress={false}
           title="Warning!"
-          message="Are you sure you want to delete the item ?"
+          message="are you sure you want to delete this item ?"
           closeOnTouchOutside={false}
           closeOnHardwareBackPress={true}
           showCancelButton={true}
