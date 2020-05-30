@@ -26,7 +26,7 @@ import { Container,
   } from 'native-base';
 import * as Font from 'expo-font';
 import { Ionicons , FontAwesome5 , MaterialCommunityIcons} from '@expo/vector-icons';
-import { StyleSheet , View , Dimensions , TouchableOpacity } from "react-native";
+import { StyleSheet , View , Dimensions , TouchableOpacity , AsyncStorage } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { SwipeListView } from 'react-native-swipe-list-view'; /** Delete this packiage */
 import AwesomeAlert from 'react-native-awesome-alerts';
@@ -92,62 +92,98 @@ class Main extends React.Component
         new_item_icon:"",
         new_item_color:"",
         test_array:[],
-        no_items:true,
+        no_items:true, 
 
         
         };
       }
      
       async componentDidMount() {
-        await Font.loadAsync({
-          Roboto: require('native-base/Fonts/Roboto.ttf'),
-          Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
-          Cairo_Black: require('../assets/fonts/Cairo_Black.ttf'),
-          Cairo_Regular: require('../assets/fonts/Cairo-Regular.ttf'),
-          Cairo_Bold: require('../assets/fonts/Cairo-Bold.ttf'),
-          Cairo_SemiBold: require('../assets/fonts/Cairo-SemiBold.ttf'),
+
+          // Load the fonts
+          await Font.loadAsync({
+            Roboto: require('native-base/Fonts/Roboto.ttf'),
+            Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+            Cairo_Black: require('../assets/fonts/Cairo_Black.ttf'),
+            Cairo_Regular: require('../assets/fonts/Cairo-Regular.ttf'),
+            Cairo_Bold: require('../assets/fonts/Cairo-Bold.ttf'),
+            Cairo_SemiBold: require('../assets/fonts/Cairo-SemiBold.ttf'),
 
 
 
 
-          
-          
-          ...Ionicons.font,
-        });
-
-        Array.prototype.sum = function (prop) {
-          var total = 0
-          for ( var i = 0, _len = this.length; i < _len; i++ ) {
-              total += this[i][prop]
-          }
-          return total
-      }
-      
-        if(this.state.items.length > 0)
-        {
-          this.setState({
-            no_items:false
-          })
-        }
-        
-        
-        this.setState({
-           isReady: true ,
-           today_expenses:this.state.items.sum('price')
+            
+            
+            ...Ionicons.font,
           });
 
-          if(this.state.today_limit < this.state.today_expenses)
+          // Add sum the values in the array
+          Array.prototype.sum = function (prop) {
+            var total = 0
+            for ( var i = 0, _len = this.length; i < _len; i++ ) {
+                total += this[i][prop]
+            }
+            return total
+        }
+
+        // get the previse saved items and check if we still in the same day
+          try {
+            const value = await AsyncStorage.getItem('items');
+            const json = JSON.parse(value); // this is how you get back the array stored
+
+            if (json !== null) {
+               this.setState({
+              items:json,
+            })
+            }
+          } catch (error) {
+            // Error retrieving data
+          }
+      
+        
+        // check if there is any items to wther or not show the no items message 
+          if(this.state.items.length > 0)
           {
-            return this.setState({
-              above_limit:"red"
+            this.setState({
+              no_items:false
             })
           }
+          
+        // add the new values to the state  
+        let get_today_expeneces = this.state.items;
+        let get_all_prices = [];
+        let change_to_number;
+        let x;
+        for(x=0;x<get_today_expeneces.length;x++) 
+        {
+          change_to_number = parseInt(get_today_expeneces[x].price)
+          let Expencise = {"price":change_to_number};
+          get_all_prices.push(Expencise);
+        }
+        
+
+         this.setState({
+            isReady: true ,
+            today_expenses:get_all_prices.sum('price')
+            });
+
+        // check the limit if it's above it change the number color to red    
+            if(this.state.today_limit < this.state.today_expenses)
+            {
+              return this.setState({
+                above_limit:"red"
+              })
+            } 
+        
+            
+
       }
 
       _removeItem = ()=>{
        
         let items_array = this.state.items;
         let index = this.state.chosen_item_index;
+        let get_all_prices = [];
         const check_item = items_array.indexOf(index)
         let color;
        
@@ -155,9 +191,20 @@ class Main extends React.Component
         { 
           items_array.splice(index,1);
 
+        let x;
+        let change_to_number;
+        for(x=0;x<items_array.length;x++) 
+        {
+          change_to_number = parseInt(items_array[x].price)
+          let Expencise = {"price":change_to_number};
+          get_all_prices.push(Expencise);
+
+        }
+
+
            this.setState({
             items:items_array,
-            today_expenses:this.state.items.sum('price'),
+            today_expenses:get_all_prices.sum('price'),
             showAlert:false,
           });
           
@@ -178,11 +225,15 @@ class Main extends React.Component
             })
           }
 
+          AsyncStorage.setItem('items',JSON.stringify(this.state.items)); 
+
+
           return this.setState({above_limit:color})
         }
       }
 
-      _addItem = ()=>{
+      _addItem = async () => {
+
         let all_items = this.state.items;
         let id = Math.random();
         let color;
@@ -208,7 +259,7 @@ class Main extends React.Component
           add_item_screen:false
         });
 
-        if(all_items.sum('price') >  this.state.today_limit )
+        if(equation >  this.state.today_limit )
         {
           color = "red";
         }
@@ -216,6 +267,8 @@ class Main extends React.Component
         {
           color = "green";
         }
+
+        AsyncStorage.setItem('items',JSON.stringify(all_items)); 
 
         return this.setState({above_limit:color})
       
