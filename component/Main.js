@@ -25,11 +25,12 @@ import { Container,
 
   } from 'native-base';
 import * as Font from 'expo-font';
-import { Ionicons , FontAwesome5 , MaterialCommunityIcons} from '@expo/vector-icons';
+import { Ionicons , FontAwesome5 , MaterialCommunityIcons , Octicons} from '@expo/vector-icons';
 import { StyleSheet , View , Dimensions , TouchableOpacity , AsyncStorage } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { SwipeListView } from 'react-native-swipe-list-view'; /** Delete this packiage */
 import AwesomeAlert from 'react-native-awesome-alerts';
+import DialogInput from 'react-native-dialog-input';
 
 
 
@@ -93,6 +94,7 @@ class Main extends React.Component
         new_item_color:"",
         test_array:[],
         no_items:true, 
+        isDialogVisible:false
 
         
         };
@@ -116,6 +118,25 @@ class Main extends React.Component
             
             ...Ionicons.font,
           });
+
+          // create user info 
+
+          let user_limit = await AsyncStorage.getItem('user_limit');
+
+
+          if(user_limit != null)
+          {
+            this.setState({
+              today_limit:user_limit
+            })
+          }
+          else
+          {
+            this.setState({
+              isDialogVisible:true
+            })
+          }
+
 
           // Add sum the values in the array
           Array.prototype.sum = function (prop) {
@@ -274,6 +295,29 @@ class Main extends React.Component
       
 
       }
+
+      _takeTodaylimit  = async ( limit ) => {
+
+        this.setState({
+          today_limit:limit,
+          isDialogVisible:false
+        })
+
+        if(this.state.today_expenses < limit)
+        {
+          this.setState({
+            above_limit:"green",
+          })
+        }else
+        {
+          this.setState({
+            above_limit:"red",
+          })
+        }
+
+       return AsyncStorage.setItem('user_limit',limit);
+
+      }
      
       render() {
 
@@ -381,8 +425,12 @@ class Main extends React.Component
                 <Title style={{fontSize:18,fontFamily: 'Cairo_Black'}}>Wallet</Title>
                 </Body>
               <Right>
-                <Button transparent>
-                  <Icon name='menu' />
+                <Button onPress={()=>{
+                  this.setState({
+                    isDialogVisible:true,
+                  })
+                }} transparent>
+                <Octicons name='gear' size={24} style={{color:"#fff"}} />
                   {/* <Text style={{fontSize:20,fontFamily:"Cairo_Bold"}}>
                    Fri 01
                   </Text> */}
@@ -586,6 +634,40 @@ class Main extends React.Component
            this._removeItem()
           }}
         />
+
+        <AwesomeAlert
+          show={this.state.userLimitAlert}
+          showProgress={false}
+          title="Warning!"
+          message="are you sure you want to delete this item ?"
+          closeOnTouchOutside={false}
+          closeOnHardwareBackPress={true}
+          showCancelButton={true}
+          showConfirmButton={true}
+          cancelText="No, cancel"
+          confirmText="Yes, delete it"
+          confirmButtonColor="#DD6B55"
+          onCancelPressed={() => {
+           this.setState({showAlert:false})
+          }}
+          onConfirmPressed={() => {
+           this._removeItem()
+          }}
+        />
+
+      <DialogInput isDialogVisible={this.state.isDialogVisible}
+                  title={"Important"}
+                  message={"Please Add Your Daly Budget"}
+                  hintInput ={"HINT INPUT"}
+                  submitInput={ (inputText) => {
+                   
+                    return this._takeTodaylimit( inputText );
+
+                  }
+                }
+                  closeDialog={ () => {this.setState({isDialogVisible:false})}}>
+      </DialogInput>
+
 
 
           </Container>
