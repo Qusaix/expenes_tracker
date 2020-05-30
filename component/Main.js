@@ -1,12 +1,36 @@
 import React from 'react';
 import { AppLoading } from 'expo';
-import { Container, Header, Left, Body, Right, Button, Icon, Title , Text , Content ,Card, CardItem , List , ListItem ,Thumbnail , Fab } from 'native-base';
+import { Container,
+  Header, 
+  Left,
+   Body, 
+   Right, 
+   Button, 
+   Icon, 
+   Title , 
+   Text , 
+   Content , 
+   Card, 
+   CardItem , 
+   List , 
+   ListItem , 
+   Thumbnail , 
+   Fab , 
+   Form , 
+   Item , 
+   Label , 
+   Input ,
+   Textarea,
+   
+
+  } from 'native-base';
 import * as Font from 'expo-font';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons , Foundation , FontAwesome5 } from '@expo/vector-icons';
 import { StyleSheet , View , Dimensions , TouchableOpacity } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { SwipeListView } from 'react-native-swipe-list-view'; /** Delete this packiage */
 import AwesomeAlert from 'react-native-awesome-alerts';
+
 
 
 const screenWidth = Dimensions.get("window").width/1.1;
@@ -46,19 +70,29 @@ class Main extends React.Component
           isReady: false,
           active:false,
           items:[
-            {"id":1,"image":"https://images-na.ssl-images-amazon.com/images/I/81MwSzttarL._SL1500_.jpg",'name':"tuna",'note':"bring 10 cans of tuna please :)","price":50,'amout':10},
-            {"id":2,"image":"https://hips.hearstapps.com/vidthumb/images/delish-u-rice-2-1529079587.jpg",'name':"Rice",'note':"Bring 10KGs of Rice","price":70,'amout':1},
-            {"id":3,"image":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Red_Apple.jpg/661px-Red_Apple.jpg",'name':"Apple",'note':"Bring 1Kg of Apples","price":50,'amout':1},
-            {"id":4,"image":"https://images-na.ssl-images-amazon.com/images/I/71qyzy9QnML._SL1500_.jpg",'name':"Oats ",'note':"One Can of Oats","price":15,'amout':5},
-            {"id":5,"image":"https://images-na.ssl-images-amazon.com/images/I/71xnxlsfqOL._AC_SX425_.jpg",'name':"Protien ",'note':"ON Marka","price":25,'amout':1},
-            {"id":6,"image":"https://www.bbcgoodfood.com/sites/default/files/recipe-collections/collection-image/2013/05/spaghetti-puttanesca_1.jpg",'name':"Pasta ",'note':"4 Pices of Pasta","price":1,'amout':4},
-            {"id":7,"image":"https://static.webteb.net/images/content/ramadanrecipe_recipe_5_719.jpg",'name':"ملوخيه ",'note':"اربعه كيلو","price":25,'amout':4},
+            {"id":1,"image":"https://images-na.ssl-images-amazon.com/images/I/81MwSzttarL._SL1500_.jpg",'name':"tuna",'note':"bring 10 cans of tuna please :)","price":50,'amout':10,"icon":"pizza-slice","color":"orange"},
+            {"id":2,"image":"https://hips.hearstapps.com/vidthumb/images/delish-u-rice-2-1529079587.jpg",'name':"Rice",'note':"Bring 10KGs of Rice","price":70,'amout':1,"icon":"pizza-slice","color":"orange"},
+            {"id":3,"image":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Red_Apple.jpg/661px-Red_Apple.jpg",'name':"رايح على الجيم",'note':"Bring 1Kg of Apples","price":5,'amout':1,"icon":"bus-alt","color":"#3387ff"},
+            {"id":4,"image":"https://images-na.ssl-images-amazon.com/images/I/71qyzy9QnML._SL1500_.jpg",'name':"Oats ",'note':"One Can of Oats","price":15,'amout':5,"icon":"pizza-slice","color":"orange"},
+            {"id":5,"image":"https://images-na.ssl-images-amazon.com/images/I/71xnxlsfqOL._AC_SX425_.jpg",'name':"Protien ",'note':"ON Marka","price":25,'amout':1,"icon":"pizza-slice","color":"orange"},
+            {"id":6,"image":"https://www.bbcgoodfood.com/sites/default/files/recipe-collections/collection-image/2013/05/spaghetti-puttanesca_1.jpg",'name':"احظر فلم قوي ",'note':"4 Pices of Pasta","price":20,'amout':4,"icon":"bowling-ball","color":"red"},
+            {"id":7,"image":"https://static.webteb.net/images/content/ramadanrecipe_recipe_5_719.jpg",'name':"ملوخيه ",'note':"اربعه كيلو","price":25,'amout':4,"icon":"pizza-slice","color":"orange"},
         ],
         today_expenses:0,
         today_limit:100, 
         above_limit:"green",
         showAlert: false,
         chosen_item_index:null,
+        add_item_screen:false,
+        cat_icon:"bus-alt",
+        add_screen_title:"Title",
+        new_item_name:"",
+        new_item_note:"",
+        new_item_price:0,
+        new_item_icon:"",
+        new_item_color:"",
+
+        
         };
       }
      
@@ -133,10 +167,135 @@ class Main extends React.Component
           return this.setState({above_limit:color})
         }
       }
+
+      _addItem = ()=>{
+        let all_items = this.state.items;
+        let id = Math.random();
+        let color;
+
+        let new_item = {
+          id:id,
+          name:this.state.new_item_name,
+          icon:this.state.new_item_icon,
+          note:this.state.new_item_note,
+          price:this.state.new_item_price,
+          color:this.state.new_item_color,
+          amout:0
+        };
+
+        all_items.push(new_item);
+       let equation = this.state.today_expenses + parseInt(new_item.price);
+
+
+         this.setState({
+          items:all_items,
+          today_expenses:equation,
+          add_item_screen:false
+        });
+
+        if(all_items.sum('price') >  this.state.today_limit )
+        {
+          color = "red";
+        }
+        else
+        {
+          color = "green";
+        }
+
+        return this.setState({above_limit:color})
+      
+
+      }
      
       render() {
+
         if (!this.state.isReady) {
           return <AppLoading />;
+        }
+
+        if(this.state.add_item_screen)
+        {
+          return(
+            <Container>
+           <Header
+            style={{backgroundColor:"green"}}
+            androidStatusBarColor={"green"}
+            >
+              <Left>
+                <Button  onPress={()=>{
+                  this.setState({
+                    add_item_screen:false,
+                  })
+                }} transparent>
+                  <FontAwesome5 name='angle-left' size={24} style={{color:"#fff"}} />
+                </Button>
+              </Left>
+              <Body>
+                <Title style={{fontSize:18,fontFamily: 'Cairo_Black'}}>back</Title>
+                </Body>
+              <Right>
+                <Button  transparent>
+                  <Icon name='menu' />
+                  {/* <Text style={{fontSize:20,fontFamily:"Cairo_Bold"}}>
+                   Fri 01
+                  </Text> */}
+
+                </Button>
+              </Right>
+            </Header>
+            <Content>
+              <View style={{flex:1,justifyContent:"center",alignItems:"center",marginTop:"10%"}}>
+              <FontAwesome5 name={this.state.cat_icon} size={60} style={{color:"gray"}} /> 
+                <Text style={{fontFamily:"Cairo_SemiBold",fontSize:25,color:"gray"}}>{this.state.add_screen_title}</Text>
+              </View>
+              <Form>
+                <Item>
+                  <Input   placeholder="Name" onChangeText={(data)=>{
+                    this.setState({
+                      new_item_name:data
+                    })
+                  }} />
+                </Item>
+                <Item>
+                  <Input placeholder="Note"  
+                  onChangeText={(data)=>{
+                    this.setState({
+                      new_item_note:data
+                    })
+                  }}
+                  />
+                </Item>
+                <Item last>
+                  <Input keyboardType='numeric' placeholder="Price"  onChangeText={(data)=>{
+                    this.setState({
+                      new_item_price:data
+                    })
+                  }} />
+                </Item>
+                {/* <Item last>
+                  <Input placeholder="Amout" />
+                </Item> */}
+                         
+
+              </Form>
+              <View style={{flex:1,alignItems:"center"}}>
+                <TouchableOpacity style={{width:"95%",backgroundColor:"green", alignItems:"center",marginTop:"5%"}}
+                onPress={()=>{
+
+                  return this._addItem();
+
+                }}
+                >
+                    <Text style={{fontSize:18,fontFamily:"Cairo_SemiBold" , color:"#fff"}}>
+                     اضافة
+                    </Text>
+                  </TouchableOpacity>
+              </View>
+              
+            </Content>
+          </Container>
+    
+          )
         }
      
         return (
@@ -229,7 +388,10 @@ class Main extends React.Component
                    return(
                     <ListItem key={item.id} avatar>
                     <Left>
-                      <Thumbnail source={{ uri: item.image }} />
+                      {/* <Thumbnail source={{ uri: item.image }} /> */}
+                      <Button style={{ backgroundColor: item.color , padding:25}}>
+                        <FontAwesome5  name={item.icon} size={19} style={{color:"#fff"}} />
+                    </Button>
                     </Left>
                     <Body>
                       <Text style={{fontFamily:"Cairo_SemiBold"}} >{ item.name }</Text>
@@ -273,12 +435,51 @@ class Main extends React.Component
             position="bottomRight"
             onPress={() => this.setState({ active: !this.state.active })}>
                 <Icon name='add' />
-                <Content style={{backgroundColor:"orange"}}>
-                        <Icon  name='flame' />
+
+                <Content onPress={()=>{
+                  this.setState({
+                    cat_icon:"bowling-ball",
+                    add_screen_title:"Entertainment",
+                    new_item_icon:"bowling-ball",
+                    add_item_screen:true,
+                    new_item_color:"red",
+
+                  })
+                }} 
+                style={{backgroundColor:"red"}}>
+                        <FontAwesome5 name='bowling-ball' size={19} style={{color:"#fff"}} />
                 </Content>
-                <Content style={{backgroundColor:"orange"}}>
-                        <Icon name='nutrition' /> 
+                
+                <Content
+                 onPress={()=>{
+                  this.setState({
+                    cat_icon:"pizza-slice",
+                    add_screen_title:"Food",
+                    new_item_icon:"pizza-slice",
+                    new_item_color:"orange",
+                    add_item_screen:true,
+                  })
+                }}
+                style={{backgroundColor:"orange"}}>
+                        <FontAwesome5 name='pizza-slice'  size={19} style={{color:"#fff"}} /> 
                 </Content>
+
+
+                <Content 
+                onPress={()=>{
+                  this.setState({
+                    cat_icon:"bus-alt",
+                    add_screen_title:"Transportation",
+                    new_item_icon:"bus-alt",
+                    new_item_color:"#3387ff",
+                    add_item_screen:true,
+                  })
+                }} 
+                style={{backgroundColor:"#3387ff"}}>
+                        <FontAwesome5 name='bus-alt' size={19} style={{color:"#fff"}} /> 
+                </Content>
+
+
             </Fab>
 
 
