@@ -86,6 +86,8 @@ i18n.translations = {
    ex:"ex.50",
    submit:"SUBMIT",
    cancel:"CANCEL",
+   avg:"avg daily exp",
+
 
   },
   ar: {
@@ -111,6 +113,7 @@ i18n.translations = {
    ex:"مثال.50",
    submit:"اضافة",
    cancel:"الغاء",
+   avg:"متوسط صرفك",
   },
 };
 // Set the locale once at the beginning of your app.
@@ -154,6 +157,7 @@ class Main extends React.Component
         no_items:true, 
         isDialogVisible:false,
         week_expences:[0,0,0,0,0,0,0],
+        avg_week_expeneces:0,
 
         
         };
@@ -182,6 +186,7 @@ class Main extends React.Component
 
           let user_limit = await AsyncStorage.getItem('user_limit');
           let today_is = await AsyncStorage.getItem('day');
+         // let today_is = 5;
           let yester_day_expences = await AsyncStorage.getItem('yesterday_expence');
           let check_week_data = await AsyncStorage.getItem('week');
 
@@ -196,9 +201,11 @@ class Main extends React.Component
          * 0 value to every day
          */
         let day_expences;
-
         if(today_is != null && check_week_data != null )
         {
+
+         // alert(d.getDay()); 
+
           if(days[d.getDay()] != days[today_is]) 
           {
 
@@ -209,11 +216,12 @@ class Main extends React.Component
               const days_data = JSON.parse(week_data); // this is how you get back the array stored
               console.log(week_data);
              
-
+              alert(days_data)
               if (days_data !== null) {
 
-                console.log("berfore: ",days_data)
+                console.log("berfore: ",days_data) 
 
+                
 
                 days_data[today_is] = yester_day_expences; 
 
@@ -231,8 +239,15 @@ class Main extends React.Component
                  change_to_num.push(num);
                }
 
+               // get the avg expencises
+               let hole_week_expeneces =  change_to_num.reduce((a, b) => a + b, 0);
+               let week_avg = hole_week_expeneces/7;
+               let float_the_num = week_avg.toFixed(2)
+               
                this.setState({
-                 week_expences:change_to_num
+                 week_expences:change_to_num,
+                 avg_week_expeneces:float_the_num,
+                 items:[],
                })
 
                AsyncStorage.setItem('week',JSON.stringify(this.state.week_expences))
@@ -249,16 +264,75 @@ class Main extends React.Component
             AsyncStorage.setItem('day',JSON.stringify(d.getDay()));
 
           }
+          else
+          {
+            try {
+              const week_data = await AsyncStorage.getItem('week');
+              const days_data = JSON.parse(week_data); // this is how you get back the array stored
+             
+              if (days_data !== null) {
+
+                console.log("berfore: ",days_data) 
+
+                
+
+                days_data[today_is] = yester_day_expences; 
+
+                console.log("after: ",days_data)
+
+
+                
+               let change_to_num = [];
+               let num;
+
+               let w;
+               for(w=0; w < days_data.length ; w++)
+               {
+                 num = parseInt(days_data[w]);
+                 change_to_num.push(num);
+               }
+
+               // get the avg expencises
+               let hole_week_expeneces =  change_to_num.reduce((a, b) => a + b, 0);
+               let week_avg = hole_week_expeneces/7;
+               let float_the_num = week_avg.toFixed(2)
+
+               this.setState({
+                 week_expences:change_to_num,
+                 avg_week_expeneces:float_the_num,
+                 items:[],
+               })
+
+               AsyncStorage.setItem('week',JSON.stringify(this.state.week_expences))
+
+             //  AsyncStorage.setItem('yesterday_expence',JSON.stringify(0));
+
+
+              }
+            } catch (error) {
+              // Error retrieving data
+            }
+          }
+
+
+
+
+
+
+         
         }
         else
         {
+         
           AsyncStorage.setItem('day',JSON.stringify(d.getDay()))
           AsyncStorage.setItem('week',JSON.stringify([0,0,0,0,0,0,0]))
           AsyncStorage.setItem('yesterday_expence',JSON.stringify(this.state.today_expenses))
+
+
         }
    
 
-        // check user limit if ther none show alert  
+        // check user have a daly budget if ther none show alert  
           if(user_limit != null)
           {
             this.setState({
@@ -280,21 +354,31 @@ class Main extends React.Component
                 total += this[i][prop]
             }
             return total
-        }
+          }
 
         // get the previse saved items and check if we still in the same day
-          try {
-            const value = await AsyncStorage.getItem('items');
-            const json = JSON.parse(value); // this is how you get back the array stored
-
-            if (json !== null) {
-               this.setState({
-              items:json,
-            })
+          if(days[d.getDay()] == days[today_is])
+          {
+            try {
+              const value = await AsyncStorage.getItem('items');
+              const json = JSON.parse(value); // this is how you get back the array stored
+  
+              if (json !== null) {
+                 this.setState({
+                items:json,
+              })
+              }
+            } catch (error) {
+              // Error retrieving data
             }
-          } catch (error) {
-            // Error retrieving data
           }
+          else
+          {
+             this.setState({
+              items:[]
+            })
+          }
+        
       
         
         // check if there is any items to wther or not show the no items message 
@@ -331,7 +415,7 @@ class Main extends React.Component
               })
             } 
         
-            
+
 
       }
 
@@ -356,11 +440,14 @@ class Main extends React.Component
           get_all_prices.push(Expencise);
 
         }
+           let d = new Date();
+           this.state.week_expences[d.getDay()] = get_all_prices.sum('price');
 
 
            this.setState({
             items:items_array,
             today_expenses:get_all_prices.sum('price'),
+            week_expences:this.state.week_expences,
             showAlert:false,
           });
           
@@ -425,11 +512,26 @@ class Main extends React.Component
         {
           color = "green";
         }
+        
+        var d = new Date();
+        
+
+        this.state.week_expences[d.getDay()] = equation;
+
 
         AsyncStorage.setItem('items',JSON.stringify(all_items)); 
         AsyncStorage.setItem('yesterday_expence',JSON.stringify(equation));
 
-        return this.setState({above_limit:color})
+        
+        // get the avg expencises
+        // let hole_week_expeneces =  change_to_num.reduce((a, b) => a + b, 0);
+        // let week_avg = hole_week_expeneces/7;
+        // let float_the_num = week_avg.toFixed(2)
+
+        return this.setState({
+          above_limit:color,
+          week_expences:this.state.week_expences
+        })
       
 
       }
@@ -679,10 +781,20 @@ class Main extends React.Component
             </View>
             
 
-           <View style={{margin:"2%",marginLeft:"3%"}}>
-           <Text style={{fontFamily: 'Cairo_SemiBold'}}>
-                   {i18n.t('week_expencises')}
+           <View style={{margin:"2%",marginLeft:"3%"}}> 
+             
+
+             
+                <View style={{flex:1,flexDirection:"row"}}>
+                <Text style={{fontFamily: 'Cairo_SemiBold',flex:1,alignSelf:"flex-start"}}>
+                        {i18n.t('week_expencises')}
                 </Text>
+                <Text style={{fontFamily: 'Cairo_Regular',color:"gray",fontSize:14,marginLeft:"25%"}}>
+                  {i18n.t('avg')}:{ this.state.avg_week_expeneces }$
+                </Text>
+                </View>
+              
+
              <Card>
              <LineChart
               data={{
