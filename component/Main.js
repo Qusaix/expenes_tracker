@@ -214,12 +214,12 @@ class Main extends React.Component
             try {
               const week_data = await AsyncStorage.getItem('week');
               const days_data = JSON.parse(week_data); // this is how you get back the array stored
-              console.log(week_data);
+              
              
-              alert(days_data)
+              
               if (days_data !== null) {
 
-                console.log("berfore: ",days_data) 
+                
 
                 
 
@@ -374,6 +374,9 @@ class Main extends React.Component
           }
           else
           {
+            
+           AsyncStorage.setItem('items',JSON.stringify([]));
+
              this.setState({
               items:[]
             })
