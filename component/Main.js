@@ -26,13 +26,15 @@ import { Container,
   } from 'native-base';
 import * as Font from 'expo-font';
 import { Ionicons , FontAwesome5 , MaterialCommunityIcons , Octicons} from '@expo/vector-icons';
-import { StyleSheet , View , Dimensions , TouchableOpacity , AsyncStorage } from "react-native";
+import { StyleSheet , View , Dimensions , TouchableOpacity , AsyncStorage , Image } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { SwipeListView } from 'react-native-swipe-list-view'; /** Delete this packiage */
 import AwesomeAlert from 'react-native-awesome-alerts';
 import DialogInput from 'react-native-dialog-input';
 import * as Localization from 'expo-localization';
 import i18n from 'i18n-js';
+import Onboarding from 'react-native-onboarding-swiper';
+
 
 
 const screenWidth = Dimensions.get("window").width/1.1;
@@ -158,6 +160,7 @@ class Main extends React.Component
         isDialogVisible:false,
         week_expences:[0,0,0,0,0,0,0],
         avg_week_expeneces:0,
+        first_time:true,
 
         
         };
@@ -566,6 +569,40 @@ class Main extends React.Component
 
         if (!this.state.isReady) {
           return <AppLoading />;
+        }
+
+        if(this.state.first_time)
+        {
+          return(
+            <Onboarding
+            pages={[
+              {
+                backgroundColor: '#006400',
+                image: <Image source={{uri:"https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png"}} style={{width:300,height:100}} />,
+                title: 'Welcome To Expenece Tracker!',
+                subtitle: 'In this app we will help you to track your daly expeneces',
+              },
+              {
+                backgroundColor: '#006400',
+                image: <Image source={{uri:"https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png"}} style={{width:300,height:100}} />,
+                title: 'How To Add item\'s',
+                subtitle: 'it\'s very simpel just press on the plus buttons \n you will find many icons every icon represent something \n ex.bus icon repeset transportation etc',
+              },
+              {
+                backgroundColor: '#006400',
+                image: <Image source={{uri:"https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png"}} style={{width:150,height:180}} />,
+                title: 'How To Change Your Daly Expeneces Limit',
+                subtitle: 'we have added the daly expeneces limit help you save some money you can change the limit any time you want throw the presing the gear icon in the to right the screen',
+              },
+              
+            ]}
+            onDone={()=>{this.setState({first_time:false})}}
+            titleStyles={{fontFamily:"Cairo_Bold"}}
+            subTitleStyles={{fontFamily:"Cairo_Regular"}}
+          />
+          )
+        
+
         }
 
         if(this.state.add_item_screen)
