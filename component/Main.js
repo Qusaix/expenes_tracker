@@ -292,7 +292,7 @@ class Main extends React.Component
         var d = new Date();
     
       
-      /**
+      /** 
        * check the day if we are not in the same day save expenese and  delete all data
        * if this is the first time the user opend the app create new week expences with
        * 0 value to every day
