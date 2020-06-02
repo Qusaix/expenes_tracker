@@ -901,7 +901,7 @@ class Main extends React.Component
                   <View style={{flex:1,alignItems:"center"}}>
 
                         <Text style={{ fontSize:20,fontFamily: 'Cairo_Bold',color:this.state.above_limit}}>
-                        {this.state.today_expenses}$
+                          ${this.state.today_expenses}
                         </Text>
 
                         <Text style={styles.card_data}>
@@ -918,7 +918,7 @@ class Main extends React.Component
                     <View style={{flex:1,alignItems:"center"}}>
 
                         <Text style={styles.money_text}>
-                          {this.state.today_limit}$
+                          ${this.state.today_limit}
                         </Text>
 
                         <Text style={styles.card_data}>
@@ -972,7 +972,7 @@ class Main extends React.Component
                        <Text style={{fontFamily:"Cairo_SemiBold"}} note>{ item.note }</Text>
                      </Body>
                      <Right>
-                       <Text note>{ item.price }$</Text>
+                       <Text note>${ item.price }</Text>
                        {/* <Text >X{ item.amout }</Text> */}
                        <TouchableOpacity onPress={()=>{this.setState({showAlert:true,chosen_item_index:index})}} ><Text><Icon size={1} name='trash' /></Text></TouchableOpacity>
                      </Right>
@@ -995,7 +995,7 @@ class Main extends React.Component
                         {i18n.t('week_expencises')}
                 </Text>
                 <Text style={{fontFamily: 'Cairo_Regular',color:"gray",fontSize:14,marginLeft:"25%"}}>
-                  {i18n.t('avg')}:{ this.state.avg_week_expeneces }$
+                  {i18n.t('avg')}:${ this.state.avg_week_expeneces }
                 </Text>
                 </View>
               
@@ -1012,6 +1012,7 @@ class Main extends React.Component
                   }
                 ],
               }}
+              yAxisLabel="$"
               width={screenWidth}
               height={220}
               chartConfig={chartConfig}
