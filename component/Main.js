@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppLoading } from 'expo';
+import { AppLoading  , Notifications } from 'expo';
 import { Container,
   Header, 
   Left,
@@ -24,9 +24,21 @@ import { Container,
    
 
   } from 'native-base';
+  import { 
+    StyleSheet ,
+    View ,
+    Dimensions ,
+    TouchableOpacity ,
+    AsyncStorage ,
+    Image ,
+    Vibration,
+    Platform,
+    AppState
+           
+  } from "react-native";
+
 import * as Font from 'expo-font';
 import { Ionicons , FontAwesome5 , MaterialCommunityIcons , Octicons} from '@expo/vector-icons';
-import { StyleSheet , View , Dimensions , TouchableOpacity , AsyncStorage , Image } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 import { SwipeListView } from 'react-native-swipe-list-view'; /** Delete this packiage */
 import AwesomeAlert from 'react-native-awesome-alerts';
@@ -34,6 +46,9 @@ import DialogInput from 'react-native-dialog-input';
 import * as Localization from 'expo-localization';
 import i18n from 'i18n-js';
 import Onboarding from 'react-native-onboarding-swiper';
+import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
+
 
 
 
@@ -186,16 +201,73 @@ class Main extends React.Component
         avg_week_expeneces:0,
         error:false,
         first_time:false,
+        expoPushToken: '',
+        notification: {},
+        appState: AppState.currentState,
         
 
 
         
         };
       }
+
+      // registerForPushNotificationsAsync = async () => {
+      //   if (Constants.isDevice) {
+      //     const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+      //     let finalStatus = existingStatus;
+      //     if (existingStatus !== 'granted') {
+      //       const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      //       finalStatus = status;
+      //     }
+      //     if (finalStatus !== 'granted') {
+      //       alert('Failed to get push token for push notification!');
+      //       return;
+      //     }
+      //     token = await Notifications.getExpoPushTokenAsync();
+      //     console.log(token);
+      //     this.setState({ expoPushToken: token });
+      //   } else {
+      //     alert('Must use physical device for Push Notifications');
+      //   }
+    
+      //   if (Platform.OS === 'android') {
+      //     Notifications.createChannelAndroidAsync('default', {
+      //       name: 'default',
+      //       sound: true,
+      //       priority: 'max',
+      //       vibrate: [0, 250, 250, 250],
+      //     });
+      //   }
+      // };
+
+      // _sendLocalNotification = () => {
+      //   const localnotification = {
+      //     title: 'Hi!:)',
+      //     body: 'Did You Track Your Expeneces Today ?',
+      //     android: {
+      //       sound: true,
+      //     },
+      //     ios: {
+      //       sound: true,
+      //     },
+
+      //   };
+      //   let sendAfterFiveSeconds = Date.now();
+      //   sendAfterFiveSeconds += 5000;
+    
+      //   const schedulingOptions = { time: sendAfterFiveSeconds };
+      //   Notifications.scheduleLocalNotificationAsync(
+      //     localnotification,
+      //     schedulingOptions
+      //   );
+      // };
+    
      
       async componentDidMount() {
 
-          // Load the fonts
+         
+          /**  LOAD THE FONTS  */ 
+
           await Font.loadAsync({
             Roboto: require('native-base/Fonts/Roboto.ttf'),
             Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
@@ -212,27 +284,41 @@ class Main extends React.Component
             ...Ionicons.font,
           });
 
-          // cehck if this the first time user opend the app
-          this._checkFirstTime();
-
-
-          // create user infos
-          
-        await this._create_user_info()
-
-      
-        
-      
-        
-        // check if there is any items to wther or not show the no items message 
-          if(this.state.items.length > 0)
-          {
-            this.setState({
-              no_items:false
-            })
+          let result = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+          if (Constants.isDevice && result.status === 'granted') {
+            console.log('Notification permissions granted.')
           }
+
+        
+
+      /**  GET THE APP STATE  */ 
+
+      //AppState.addEventListener('change', this._handleAppStateChange);
+
+      /** SEND NOTIFICTION  */ 
+       
+      //  this._sendLocalNotification();
+
+      /** CHECK IF THIS THE FIRST TIME USER OPEND THE APP */ 
+
+      this._checkFirstTime();
+
+
+      /** CREATE USER INFOS */ 
           
-        // add the new values to the state  
+      await this._create_user_info()
+
+
+      /** CHECK IF THERE IS ANY ITEMS TO WHTER OR NOT SHOW THE NO ITEMS MESSAGE */ 
+          
+      if(this.state.items.length > 0)
+        {
+          this.setState({
+            no_items:false
+          })
+        }
+          
+        /** ADD THE NEW VALUES TO THE STATE */ 
         let get_today_expeneces = this.state.items;
         let get_all_prices = [];
         let change_to_number;
@@ -250,7 +336,7 @@ class Main extends React.Component
             today_expenses:get_all_prices.sum('price')
             });
 
-        // check the limit if it's above it change the number color to red    
+        /** CHECK THE LIMIT IF IT'S LESS THEN EXPENECE CHANGE IT TO RED*/    
             if(this.state.today_limit < this.state.today_expenses)
             {
               return this.setState({
@@ -260,7 +346,9 @@ class Main extends React.Component
         
 
 
-      } 
+      }
+
+  
 
       _checkFirstTime = async ()=>{
 
@@ -310,14 +398,12 @@ class Main extends React.Component
 
           try {
             const week_data = await AsyncStorage.getItem('week');
-            const days_data = JSON.parse(week_data); // this is how you get back the array stored
+            const days_data = JSON.parse(week_data); 
             
            
             
             if (days_data !== null) {
 
-              
-             // alert(yester_day_expences)
               
 
               days_data[today_is] = yester_day_expences; 
