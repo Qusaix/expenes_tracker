@@ -89,6 +89,19 @@ i18n.translations = {
    submit:"SUBMIT",
    cancel:"CANCEL",
    avg:"avg daily exp",
+   tut_welcome:"Welcome To Expenece Tracker!",
+   tut_welcome_sub:"In this app we will help you to track your daly expeneces",
+   tut_how_to_add_items:"How To Add item\'s",
+   tut_how_to_add_items_sub:'it\'s very simpel just press on the plus buttons \n you will find many icons every icon represent something \n ex.bus icon repeset transportation etc',
+   tut_change_exp:'How To Change Your Daly Expeneces Limit',
+   tut_change_exp_sub:'we have added the daly expeneces limit help you save some money you can change the limit any time you want throw the presing the gear icon in the to right the screen',
+   next:"Next",
+   skip:'Skip',
+   cancel_expeneces:"cancel",
+   submit_expeneces:'save',
+   err_msg:'Please At least add the title',
+
+   
 
 
   },
@@ -116,6 +129,17 @@ i18n.translations = {
    submit:"اضافة",
    cancel:"الغاء",
    avg:"متوسط صرفك",
+   tut_welcome:"مرحبا بك  في تطبيق تكاليف",
+   tut_welcome_sub:"في هذا التطبيق نساعدك في تتبع مصاريفك لتوفير اكبر قدر من المال",
+   tut_how_to_add_items:"طريقة الاضافة",
+   tut_how_to_add_items_sub:'طريقة الاضافة جدا بسيطه فقط عليك النقر على اشاره الزائد ثم تختار نوع الصرف مثلا ايقونت البيتزا تدل على الاكل ',
+   tut_change_exp:'طريقة تغير حد مصروفك اليومي',
+   tut_change_exp_sub:'لقد اضفنا حد المصروف اليومي لمساعدك في توفير اكبر قدر من المال ب امكانك تغير الحد عن طريق النقر على ايقونت العدادات',
+   next:"التالي",
+   skip:'اختصر',
+   cancel_expeneces:"الغاء",
+   submit_expeneces:'حفظ',
+   err_msg:'الرجاء اضافة العنوان على الاقل',
   },
 };
 // Set the locale once at the beginning of your app.
@@ -160,7 +184,10 @@ class Main extends React.Component
         isDialogVisible:false,
         week_expences:[0,0,0,0,0,0,0],
         avg_week_expeneces:0,
-        first_time:true,
+        error:false,
+        first_time:false,
+        
+
 
         
         };
@@ -185,205 +212,15 @@ class Main extends React.Component
             ...Ionicons.font,
           });
 
-          // create user info 
-
-          let user_limit = await AsyncStorage.getItem('user_limit');
-          let today_is = await AsyncStorage.getItem('day');
-         // let today_is = 5;
-          let yester_day_expences = await AsyncStorage.getItem('yesterday_expence');
-          let check_week_data = await AsyncStorage.getItem('week');
-
-          var days = ["Sunday","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]; 
-          var d = new Date();
-        //  alert(d.getDay());
-        // this.setState({todayis:days[d.getDay()]})
-        
-        /**
-         * check the day if we are not in the same day save expenese and  delete all data
-         * if this is the first time the user opend the app create new week expences with
-         * 0 value to every day
-         */
-        let day_expences;
-        if(today_is != null && check_week_data != null )
-        {
-
-         // alert(d.getDay()); 
-
-          if(days[d.getDay()] != days[today_is]) 
-          {
-
-            
-
-            try {
-              const week_data = await AsyncStorage.getItem('week');
-              const days_data = JSON.parse(week_data); // this is how you get back the array stored
-              
-             
-              
-              if (days_data !== null) {
-
-                
-
-                
-
-                days_data[today_is] = yester_day_expences; 
-
-                console.log("after: ",days_data)
+          // cehck if this the first time user opend the app
+          this._checkFirstTime();
 
 
-                
-               let change_to_num = [];
-               let num;
+          // create user infos
+          
+        await this._create_user_info()
 
-               let w;
-               for(w=0; w < days_data.length ; w++)
-               {
-                 num = parseInt(days_data[w]);
-                 change_to_num.push(num);
-               }
-
-               // get the avg expencises
-               let hole_week_expeneces =  change_to_num.reduce((a, b) => a + b, 0);
-               let week_avg = hole_week_expeneces/7;
-               let float_the_num = week_avg.toFixed(2)
-               
-               this.setState({
-                 week_expences:change_to_num,
-                 avg_week_expeneces:float_the_num,
-                 items:[],
-               })
-
-               AsyncStorage.setItem('week',JSON.stringify(this.state.week_expences))
-
-             //  AsyncStorage.setItem('yesterday_expence',JSON.stringify(0));
-
-
-              }
-            } catch (error) {
-              // Error retrieving data
-            }
-
-
-            AsyncStorage.setItem('day',JSON.stringify(d.getDay()));
-
-          }
-          else
-          {
-            try {
-              const week_data = await AsyncStorage.getItem('week');
-              const days_data = JSON.parse(week_data); // this is how you get back the array stored
-             
-              if (days_data !== null) {
-
-                console.log("berfore: ",days_data) 
-
-                
-
-                days_data[today_is] = yester_day_expences; 
-
-                console.log("after: ",days_data)
-
-
-                
-               let change_to_num = [];
-               let num;
-
-               let w;
-               for(w=0; w < days_data.length ; w++)
-               {
-                 num = parseInt(days_data[w]);
-                 change_to_num.push(num);
-               }
-
-               // get the avg expencises
-               let hole_week_expeneces =  change_to_num.reduce((a, b) => a + b, 0);
-               let week_avg = hole_week_expeneces/7;
-               let float_the_num = week_avg.toFixed(2)
-
-               this.setState({
-                 week_expences:change_to_num,
-                 avg_week_expeneces:float_the_num,
-                 items:[],
-               })
-
-               AsyncStorage.setItem('week',JSON.stringify(this.state.week_expences))
-
-             //  AsyncStorage.setItem('yesterday_expence',JSON.stringify(0));
-
-
-              }
-            } catch (error) {
-              // Error retrieving data
-            }
-          }
-
-
-
-
-
-
-         
-        }
-        else
-        {
-         
-          AsyncStorage.setItem('day',JSON.stringify(d.getDay()))
-          AsyncStorage.setItem('week',JSON.stringify([0,0,0,0,0,0,0]))
-          AsyncStorage.setItem('yesterday_expence',JSON.stringify(this.state.today_expenses))
-
-
-        }
-   
-
-        // check user have a daly budget if ther none show alert  
-          if(user_limit != null)
-          {
-            this.setState({
-              today_limit:user_limit
-            })
-          }
-          else
-          {
-            this.setState({
-              isDialogVisible:true
-            })
-          }
-
-
-          // Add sum the values in the array
-          Array.prototype.sum = function (prop) {
-            var total = 0
-            for ( var i = 0, _len = this.length; i < _len; i++ ) {
-                total += this[i][prop]
-            }
-            return total
-          }
-
-        // get the previse saved items and check if we still in the same day
-          if(days[d.getDay()] == days[today_is])
-          {
-            try {
-              const value = await AsyncStorage.getItem('items');
-              const json = JSON.parse(value); // this is how you get back the array stored
-  
-              if (json !== null) {
-                 this.setState({
-                items:json,
-              })
-              }
-            } catch (error) {
-              // Error retrieving data
-            }
-          }
-          else
-          {
-            
-           AsyncStorage.setItem('items',JSON.stringify([]));
-
-             this.setState({
-              items:[]
-            })
-          }
+      
         
       
         
@@ -421,6 +258,229 @@ class Main extends React.Component
               })
             } 
         
+
+
+      } 
+
+      _checkFirstTime = async ()=>{
+
+        let check_user = await AsyncStorage.getItem('first_time_user');
+
+        if(check_user == null)
+        {
+          this.setState({
+            first_time:true
+          })
+          
+          AsyncStorage.setItem('first_time_user','false');
+          
+        }
+
+      }
+
+      _create_user_info = async ()=>{
+        
+        
+        
+        let user_limit = await AsyncStorage.getItem('user_limit');
+        let today_is = await AsyncStorage.getItem('day');
+        //let today_is = 5;
+        let yester_day_expences = await AsyncStorage.getItem('yesterday_expence');
+        let check_week_data = await AsyncStorage.getItem('week');
+
+        var days = ["Sunday","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]; 
+        var d = new Date();
+    
+      
+      /**
+       * check the day if we are not in the same day save expenese and  delete all data
+       * if this is the first time the user opend the app create new week expences with
+       * 0 value to every day
+       */
+
+      let day_expences;
+      if(today_is != null && check_week_data != null )
+      {
+
+
+        if(days[d.getDay()] != days[today_is]) 
+        {
+
+          
+
+          try {
+            const week_data = await AsyncStorage.getItem('week');
+            const days_data = JSON.parse(week_data); // this is how you get back the array stored
+            
+           
+            
+            if (days_data !== null) {
+
+              
+             // alert(yester_day_expences)
+              
+
+              days_data[today_is] = yester_day_expences; 
+
+              console.log("after: ",days_data)
+
+
+              
+             let change_to_num = [];
+             let num;
+
+             let w;
+             for(w=0; w < days_data.length ; w++)
+             {
+               num = parseInt(days_data[w]);
+               change_to_num.push(num);
+             }
+
+             // get the avg expencises
+             let hole_week_expeneces =  change_to_num.reduce((a, b) => a + b, 0);
+             let week_avg = hole_week_expeneces/7;
+             let float_the_num = week_avg.toFixed(2)
+             
+             this.setState({
+               week_expences:change_to_num,
+               avg_week_expeneces:float_the_num,
+               items:[],
+             })
+
+             AsyncStorage.setItem('week',JSON.stringify(this.state.week_expences))
+
+           //  AsyncStorage.setItem('yesterday_expence',JSON.stringify(0));
+
+
+            }
+          } catch (error) {
+            // Error retrieving data
+          }
+
+
+          AsyncStorage.setItem('day',JSON.stringify(d.getDay()));
+
+        }
+        else
+        {
+          try {
+            const week_data = await AsyncStorage.getItem('week');
+            const days_data = JSON.parse(week_data); // this is how you get back the array stored
+           
+            if (days_data !== null) {
+
+              console.log("berfore: ",days_data) 
+
+              
+
+              days_data[today_is] = yester_day_expences; 
+
+              console.log("after: ",days_data)
+
+
+              
+             let change_to_num = [];
+             let num;
+
+             let w;
+             for(w=0; w < days_data.length ; w++)
+             {
+               num = parseInt(days_data[w]);
+               change_to_num.push(num);
+             }
+
+             // get the avg expencises
+             let hole_week_expeneces =  change_to_num.reduce((a, b) => a + b, 0);
+             let week_avg = hole_week_expeneces/7;
+             let float_the_num = week_avg.toFixed(2)
+
+             this.setState({
+               week_expences:change_to_num,
+               avg_week_expeneces:float_the_num,
+               items:[],
+             })
+
+             AsyncStorage.setItem('week',JSON.stringify(this.state.week_expences))
+
+           //  AsyncStorage.setItem('yesterday_expence',JSON.stringify(0));
+
+
+            }
+          } catch (error) {
+            // Error retrieving data
+          }
+        }
+
+
+
+
+
+
+       
+      }
+      else
+      {
+       
+        AsyncStorage.setItem('day',JSON.stringify(d.getDay()))
+        AsyncStorage.setItem('week',JSON.stringify([0,0,0,0,0,0,0]))
+        AsyncStorage.setItem('yesterday_expence',JSON.stringify(this.state.today_expenses))
+
+
+      }
+ 
+
+      // check user have a daly budget if ther none show alert  
+        if(user_limit != null)
+        {
+          this.setState({
+            today_limit:user_limit
+          })
+        }
+        else
+        {
+          this.setState({
+            isDialogVisible:true
+          })
+        }
+
+
+        // Add sum the values in the array
+        Array.prototype.sum = function (prop) {
+          var total = 0
+          for ( var i = 0, _len = this.length; i < _len; i++ ) {
+              total += this[i][prop]
+          }
+          return total
+        }
+
+      // get the previse saved items and check if we still in the same day
+        if(days[d.getDay()] == days[today_is])
+        {
+         
+            try {
+              const value = await AsyncStorage.getItem('items');
+              const json = JSON.parse(value); // this is how you get back the array stored
+
+              if (json !== null) {
+                this.setState({
+                items:json,
+              })
+              }
+            } catch (error) {
+              // Error retrieving data
+            }
+        }
+        else
+        {
+          
+         AsyncStorage.setItem('items',JSON.stringify([]));
+
+           this.setState({
+            items:[]
+          })
+        }
+      
+    
 
 
       }
@@ -485,6 +545,15 @@ class Main extends React.Component
 
       _addItem = async () => {
 
+        if(this.state.new_item_name == "")
+        {
+          
+        
+         // alert(i18n.t('err_msg'))
+          
+          return;
+        }
+
         let all_items = this.state.items;
         let id = Math.random();
         let color;
@@ -536,7 +605,11 @@ class Main extends React.Component
 
         return this.setState({
           above_limit:color,
-          week_expences:this.state.week_expences
+          week_expences:this.state.week_expences,
+          new_item_name:'',
+          new_item_note:'',
+          new_item_price:'',
+
         })
       
 
@@ -578,28 +651,34 @@ class Main extends React.Component
             pages={[
               {
                 backgroundColor: '#006400',
-                image: <Image source={{uri:"https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png"}} style={{width:300,height:100}} />,
-                title: 'Welcome To Expenece Tracker!',
-                subtitle: 'In this app we will help you to track your daly expeneces',
+                image: <FontAwesome5 name='smile' size={100} style={{color:"#fff"}} />,
+                title: i18n.t('tut_welcome'),
+                subtitle: i18n.t('tut_welcome_sub'),
               },
               {
                 backgroundColor: '#006400',
-                image: <Image source={{uri:"https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png"}} style={{width:300,height:100}} />,
-                title: 'How To Add item\'s',
-                subtitle: 'it\'s very simpel just press on the plus buttons \n you will find many icons every icon represent something \n ex.bus icon repeset transportation etc',
+             //   image: <Image source={{uri:"https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png"}} style={{width:300,height:100}} />,
+                image: <FontAwesome5 name='plus' size={100} style={{color:"#fff"}} />,
+                title: i18n.t('tut_how_to_add_items'),
+                subtitle: i18n.t('tut_how_to_add_items_sub'),
               },
               {
                 backgroundColor: '#006400',
-                image: <Image source={{uri:"https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png"}} style={{width:150,height:180}} />,
-                title: 'How To Change Your Daly Expeneces Limit',
-                subtitle: 'we have added the daly expeneces limit help you save some money you can change the limit any time you want throw the presing the gear icon in the to right the screen',
+               // image: <Image source={{uri:"https://icatcare.org/app/uploads/2018/07/Thinking-of-getting-a-cat.png"}} style={{width:150,height:180}} />,
+                image: <Octicons name='gear' size={100} style={{color:"#fff"}} />,
+                title: i18n.t('tut_change_exp') ,
+                subtitle: i18n.t('tut_change_exp_sub'),
               },
               
             ]}
             onDone={()=>{this.setState({first_time:false})}}
+            onSkip={()=>{this.setState({first_time:false})}}
             titleStyles={{fontFamily:"Cairo_Bold"}}
             subTitleStyles={{fontFamily:"Cairo_Regular"}}
+            nextLabel={i18n.t('next')}
+            skipLabel={i18n.t('skip')}
           />
+          
           )
         
 
@@ -619,7 +698,7 @@ class Main extends React.Component
                     add_item_screen:false,
                   })
                 }} transparent>
-                  <FontAwesome5 name='angle-left' size={24} style={{color:"#fff"}} />
+                  <MaterialCommunityIcons name='exit-run' size={24} style={{color:"#fff"}} />
                 </Button>
               </Left>
               <Body>
@@ -627,7 +706,7 @@ class Main extends React.Component
               </Body>
               <Right>
                 <Button  transparent>
-                  <Icon name='menu' />
+                  {/* <Icon name='menu' /> */}
                   {/* <Text style={{fontSize:20,fontFamily:"Cairo_Bold"}}>
                    Fri 01
                   </Text> */}
@@ -938,10 +1017,37 @@ class Main extends React.Component
           confirmButtonTextStyle={{fontFamily:"Cairo_Regular"}}
         />
 
+        <AwesomeAlert
+          show={this.state.error}
+          showProgress={false}
+          title="AwesomeAlert"
+          message="I have a message for you!"
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+          showCancelButton={true}
+          showConfirmButton={true}
+          cancelText="No, cancel"
+          confirmText="Yes, delete it"
+          confirmButtonColor="#DD6B55"
+          onCancelPressed={() => {
+            this.hideAlert();
+          }}
+          onConfirmPressed={() => {
+            this.hideAlert();
+          }}
+        />
+
+
+
       <DialogInput isDialogVisible={this.state.isDialogVisible}
                   title={i18n.t('important')}
                   message={i18n.t('message_add_budget')}
+                  textInputProps={{
+                    keyboardType:'numeric',
+                  }}
                   hintInput ={i18n.t('ex')}
+                  cancelText={i18n.t('cancel_expeneces')}
+                  submitText={i18n.t('submit_expeneces')}
                   submitInput={ (inputText) => {
                    
                     return this._takeTodaylimit( inputText );
