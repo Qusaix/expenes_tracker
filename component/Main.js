@@ -38,7 +38,7 @@ import { Container,
   } from "react-native";
 
 import * as Font from 'expo-font';
-import { Ionicons , FontAwesome5 , MaterialCommunityIcons , Octicons} from '@expo/vector-icons';
+import { Ionicons , FontAwesome5 , MaterialCommunityIcons , Octicons , AntDesign } from '@expo/vector-icons';
 import { LineChart} from "react-native-chart-kit";
 import { PieChart } from 'react-native-svg-charts'
 import { SwipeListView } from 'react-native-swipe-list-view'; /** Delete this packiage */
@@ -109,7 +109,8 @@ i18n.translations = {
    transportation:"Transportation",
    entertainment:"Entertainment",
    food:"Food",
-   where_expencise_go:"Where Expencise Go",
+   where_expencise_go:"Analytics",
+   no_data_yet:"No Enough Data Yet"
 
    
 
@@ -154,6 +155,8 @@ i18n.translations = {
    entertainment:"الترفيه",
    food:"اكل",
    where_expencise_go:"احصائيات",
+   no_data_yet:"لا يوجد معلومات كافيه"
+
 
   },
 };
@@ -204,6 +207,32 @@ class Main extends React.Component
         expoPushToken: '',
         notification: {},
         appState: AppState.currentState,
+        over_all_info:[
+          {
+            id:1,
+            type:"Transportation",
+            expeneses:10,
+            color:"#3387ff"
+          },
+          {
+            id:2,
+            type:"Entertainment",
+            expeneses:10,
+            color:"red"
+          },
+          {
+            id:3,
+            type:"Food",
+            expeneses:10,
+            color:"orange" 
+          },
+      ],
+      overAll_FoodExpeneces:0,
+      overAll_transportationExpeneces:0,
+      overAll_entertainmentExpeneces:0,
+      analytics:false,
+
+
         
         
 
@@ -290,6 +319,9 @@ class Main extends React.Component
             console.log('Notification permissions granted.')
           }
 
+
+
+
         
 
       /**  GET THE APP STATE  */ 
@@ -308,6 +340,9 @@ class Main extends React.Component
       /** CREATE USER INFOS */ 
           
       await this._create_user_info()
+
+      /** CREATE OVERALL EXPENECE */
+      await this._takeOverallExpeneces()
 
 
       /** CHECK IF THERE IS ANY ITEMS TO WHTER OR NOT SHOW THE NO ITEMS MESSAGE */ 
@@ -572,13 +607,38 @@ class Main extends React.Component
 
       }
 
-      _removeItem = ()=>{
+      _removeItem = async ()=>{
        
         let items_array = this.state.items;
         let index = this.state.chosen_item_index;
         let get_all_prices = [];
         const check_item = items_array.indexOf(index)
         let color;
+
+
+          /**
+         * REMOVE ITEM PRICE FROM OVERALL EXPENECES 
+         */
+        if(items_array[index].color == "orange")
+        {
+          let get_over_allFoodExpeneces = await AsyncStorage.getItem('overAll_FoodExpeneces');         
+          let EQ = parseInt(get_over_allFoodExpeneces) - parseInt(items_array[index].price); 
+          AsyncStorage.setItem('overAll_FoodExpeneces',JSON.stringify(EQ))
+        }
+
+        if(items_array[index].color == "#3387ff")
+        {
+          let get_over_all_TransportationExpeneces = await AsyncStorage.getItem('overAll_transportationExpeneces');
+          let EQ = parseInt(get_over_all_TransportationExpeneces) - parseInt(items_array[index].price)
+          AsyncStorage.setItem('overAll_transportationExpeneces',JSON.stringify(EQ))
+        }
+
+        if(items_array[index].color == "red")
+        {
+          let get_over_allentertainment = await AsyncStorage.getItem('overAll_entertainmentExpeneces');
+          let EQ = parseInt(get_over_allentertainment) - parseInt(items_array[index].price)
+          AsyncStorage.setItem('overAll_entertainmentExpeneces',JSON.stringify(EQ))
+        }
        
         if(check_item === -1) 
         { 
@@ -621,6 +681,8 @@ class Main extends React.Component
             })
           }
 
+        
+
           AsyncStorage.setItem('items',JSON.stringify(this.state.items)); 
           AsyncStorage.setItem('yesterday_expence',JSON.stringify(this.state.today_expenses));
 
@@ -636,7 +698,7 @@ class Main extends React.Component
         {
           
         
-         // alert(i18n.t('err_msg'))
+          alert(i18n.t('err_msg'))
           
           return;
         }
@@ -690,6 +752,32 @@ class Main extends React.Component
         // let week_avg = hole_week_expeneces/7;
         // let float_the_num = week_avg.toFixed(2)
 
+        /**
+         * SAVE TO OVERALL EXPENECES 
+         */
+        if(this.state.new_item_color == "orange")
+        {
+          let get_over_allFoodExpeneces = await AsyncStorage.getItem('overAll_FoodExpeneces');         
+          let EQ = parseInt(get_over_allFoodExpeneces) + parseInt(this.state.new_item_price); 
+          AsyncStorage.setItem('overAll_FoodExpeneces',JSON.stringify(EQ))
+        }
+
+        if(this.state.new_item_color == "#3387ff")
+        {
+          let get_over_all_TransportationExpeneces = await AsyncStorage.getItem('overAll_transportationExpeneces');
+          let EQ = parseInt(get_over_all_TransportationExpeneces) + parseInt(this.state.new_item_price)
+          AsyncStorage.setItem('overAll_transportationExpeneces',JSON.stringify(EQ))
+        }
+
+        if(this.state.new_item_color == "red")
+        {
+          let get_over_allentertainment = await AsyncStorage.getItem('overAll_entertainmentExpeneces');
+          let EQ = parseInt(get_over_allentertainment) + parseInt(this.state.new_item_price)
+          AsyncStorage.setItem('overAll_entertainmentExpeneces',JSON.stringify(EQ))
+        }
+
+
+
         return this.setState({
           above_limit:color,
           week_expences:this.state.week_expences,
@@ -724,6 +812,62 @@ class Main extends React.Component
        return AsyncStorage.setItem('user_limit',limit);
 
       }
+
+      _takeOverallExpeneces = async () =>{
+
+        /** GET THE USER OVERALL EXPENECES DATA*/
+        const food_expeneces = await AsyncStorage.getItem('overAll_FoodExpeneces');
+        const transportation_expeneces = await AsyncStorage.getItem('overAll_transportationExpeneces');
+        const entertainment_expeneces = await AsyncStorage.getItem('overAll_entertainmentExpeneces');
+
+
+        /** CHECK IF THE USER HAVE OVER ALL EXPENECE 
+         * IF NOT CREATE ONE
+         */
+        if(food_expeneces == null || transportation_expeneces == null || entertainment_expeneces == null)
+        {
+
+          /** CREATING USER OVERALL EXPENECES */
+          AsyncStorage.setItem('overAll_FoodExpeneces',JSON.stringify(0));
+          AsyncStorage.setItem('overAll_transportationExpeneces',JSON.stringify(0));
+          AsyncStorage.setItem('overAll_entertainmentExpeneces',JSON.stringify(0));
+
+
+         /** AFTER CREATEING THE EXPENECES EXIT THE FUNCTION */
+          return this.setState({
+            analytics:true,
+          });
+
+        }
+        else
+        {
+
+          /** UPDATE THE OVERALL EXPENECES INFO */
+
+          let info_array = this.state.over_all_info;
+
+          info_array[0].expeneses = parseInt(transportation_expeneces);
+          info_array[1].expeneses = parseInt(entertainment_expeneces);
+          info_array[2].expeneses = parseInt(food_expeneces);
+          
+          return this.setState({
+              over_all_info:info_array,
+              overAll_FoodExpeneces:parseInt(food_expeneces),
+              overAll_transportationExpeneces:parseInt(transportation_expeneces),
+              overAll_entertainmentExpeneces:parseInt(entertainment_expeneces),
+              
+          });
+
+
+
+
+          
+
+        }
+
+
+
+      }
      
       render() {
 
@@ -733,10 +877,10 @@ class Main extends React.Component
             {"id":6,"image":"https://www.bbcgoodfood.com/sites/default/files/recipe-collections/collection-image/2013/05/spaghetti-puttanesca_1.jpg",'name':"احظر فلم قوي ",'note':"4 Pices of Pasta","price":2,'amout':4,"icon":"bowling-ball","color":"red"},
         ]
         const randomColor = () => ('#' + ((Math.random() * 0xffffff) << 0).toString(16) + '000000').slice(0, 7)
-        const pieData = data
+        const pieData = this.state.over_all_info
             .filter((value) => value.id > 0)
             .map((value, index) => ({
-                value:value.price,
+                value:value.expeneses,
                 svg: {
                     fill: value.color,
                     onPress: () => console.log('press', index),
@@ -748,7 +892,7 @@ class Main extends React.Component
         if (!this.state.isReady) {
           return <AppLoading />;
         }
-
+ 
         if(this.state.first_time)
         {
           return(
@@ -1051,42 +1195,55 @@ class Main extends React.Component
             </View>
 
           <Card style={{flexWrap:"wrap",flexDirection:"row" , padding:"5%"}}>
-            
-            <PieChart outerRadius={"1%"} innerRadius={"100%"} animate={true} animationDuration={1000} style={{ height: 100  , width: 100 }} data={pieData} />
 
-            <View style={{flex:1,flexWrap:"wrap"}}>
-               
-                <TouchableOpacity style={{margin:"2%",padding:5,backgroundColor:"orange",borderRadius:12,flexDirection:"row"}}>
-                  <FontAwesome5  name={'pizza-slice'} size={12} style={{color:"#fff"}} />
-              <Text style={{fontFamily:"Cairo_SemiBold",color:"#fff",fontSize:8,margin:"2%"}}> {i18n.t('food')}</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={{margin:"2%",padding:5,backgroundColor:"#3387ff",borderRadius:12,flexDirection:"row"}}>
-                  <FontAwesome5  name={'bus-alt'} size={12} style={{color:"#fff"}} />
-                  <Text style={{fontFamily:"Cairo_SemiBold",color:"#fff",fontSize:8,margin:"2%"}}> {i18n.t('transportation')}</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={{margin:"2%",padding:5,backgroundColor:"red",borderRadius:12,flexDirection:"row"}}>
-                  <FontAwesome5  name={'bowling-ball'} size={12} style={{color:"#fff"}} />
-                  <Text style={{fontFamily:"Cairo_SemiBold",color:"#fff",fontSize:8,margin:"2%"}}> {i18n.t('entertainment')}</Text>
-                </TouchableOpacity>
-              
-            </View>
-
-            <View >
-               
-              <Text style={{fontFamily:"Cairo_SemiBold",fontSize:12,color:"gray"}}>{i18n.t('transportation')}:</Text>
-              <Text style={{fontFamily:"Cairo_Bold",fontSize:12}}>$50</Text>
-
-              <Text style={{fontFamily:"Cairo_SemiBold",fontSize:12,color:"gray"}}>{i18n.t('entertainment')}:</Text>
-              <Text style={{fontFamily:"Cairo_Bold",fontSize:12}}>$10</Text>
-
-              <Text style={{fontFamily:"Cairo_SemiBold",fontSize:12,color:"gray"}}>{i18n.t('food')}:</Text>
-              <Text style={{fontFamily:"Cairo_Bold",fontSize:12}}>$20</Text>
-
-
+            {this.state.analytics ? (
+              <View style={{marginRight:"5%",justifyContent:"center", alignItems:"center"}}>
+                <AntDesign style={{fontSize:50,color:"gray"}} name={'inbox'} />
+            <Text style={{fontFamily:"Cairo_SemiBold",color:"gray"}}>{ i18n.t('no_data_yet') }</Text>
+              </View>
+            ):(
              
-           </View>
+             
+              <PieChart outerRadius={"1%"} innerRadius={"100%"} animate={true} animationDuration={1000} style={{ height: 100  , width: "45%" }} data={pieData} />
+
+
+              
+            )}
+            
+
+                  <View style={{flex:1,flexWrap:"wrap"}}>
+                    
+                      <TouchableOpacity style={{margin:"2%",padding:5,backgroundColor:"orange",borderRadius:12,flexDirection:"row"}}>
+                        <FontAwesome5  name={'pizza-slice'} size={12} style={{color:"#fff"}} />
+                    <   Text style={{fontFamily:"Cairo_SemiBold",color:"#fff",fontSize:8,margin:"2%"}}> {i18n.t('food')}</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity style={{margin:"2%",padding:5,backgroundColor:"#3387ff",borderRadius:12,flexDirection:"row"}}>
+                        <FontAwesome5  name={'bus-alt'} size={12} style={{color:"#fff"}} />
+                        <Text style={{fontFamily:"Cairo_SemiBold",color:"#fff",fontSize:8,margin:"2%"}}> {i18n.t('transportation')}</Text>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity style={{margin:"2%",padding:5,backgroundColor:"red",borderRadius:12,flexDirection:"row"}}>
+                        <FontAwesome5  name={'bowling-ball'} size={12} style={{color:"#fff"}} />
+                        <Text style={{fontFamily:"Cairo_SemiBold",color:"#fff",fontSize:8,margin:"2%"}}> {i18n.t('entertainment')}</Text>
+                      </TouchableOpacity>
+                    
+                  </View>
+
+                  <View>
+                    
+                    <Text style={{fontFamily:"Cairo_SemiBold",fontSize:12,color:"gray"}}>{i18n.t('transportation')}:</Text>
+                    <Text style={{fontFamily:"Cairo_Bold",fontSize:12}}>${ this.state.overAll_transportationExpeneces }</Text>
+
+                    <Text style={{fontFamily:"Cairo_SemiBold",fontSize:12,color:"gray"}}>{i18n.t('entertainment')}:</Text>
+                    <Text style={{fontFamily:"Cairo_Bold",fontSize:12}}>${ this.state.overAll_entertainmentExpeneces }</Text>
+
+                    <Text style={{fontFamily:"Cairo_SemiBold",fontSize:12,color:"gray"}}>{i18n.t('food')}:</Text>
+                    <Text style={{fontFamily:"Cairo_Bold",fontSize:12}}>${ this.state.overAll_FoodExpeneces }</Text>
+
+
+                  
+                </View>
 
 
 
