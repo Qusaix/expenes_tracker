@@ -607,7 +607,7 @@ class Main extends React.Component
 
       }
 
-      _removeItem = async ()=>{
+      _removeItem = ()=>{
        
         let items_array = this.state.items;
         let index = this.state.chosen_item_index;
@@ -615,31 +615,19 @@ class Main extends React.Component
         const check_item = items_array.indexOf(index)
         let color;
 
-
           /**
          * REMOVE ITEM PRICE FROM OVERALL EXPENECES 
          */
-        if(items_array[index].color == "orange")
-        {
-          let get_over_allFoodExpeneces = await AsyncStorage.getItem('overAll_FoodExpeneces');         
-          let EQ = parseInt(get_over_allFoodExpeneces) - parseInt(items_array[index].price); 
-          AsyncStorage.setItem('overAll_FoodExpeneces',JSON.stringify(EQ))
-        }
+        let that = this;
+        setTimeout(function(){
+          that._removeFromStorage();
+        },1)
 
-        if(items_array[index].color == "#3387ff")
-        {
-          let get_over_all_TransportationExpeneces = await AsyncStorage.getItem('overAll_transportationExpeneces');
-          let EQ = parseInt(get_over_all_TransportationExpeneces) - parseInt(items_array[index].price)
-          AsyncStorage.setItem('overAll_transportationExpeneces',JSON.stringify(EQ))
-        }
 
-        if(items_array[index].color == "red")
-        {
-          let get_over_allentertainment = await AsyncStorage.getItem('overAll_entertainmentExpeneces');
-          let EQ = parseInt(get_over_allentertainment) - parseInt(items_array[index].price)
-          AsyncStorage.setItem('overAll_entertainmentExpeneces',JSON.stringify(EQ))
-        }
-       
+
+        setTimeout(function(){
+
+             
         if(check_item === -1) 
         { 
           items_array.splice(index,1);
@@ -654,18 +642,18 @@ class Main extends React.Component
 
         }
            let d = new Date();
-           this.state.week_expences[d.getDay()] = get_all_prices.sum('price');
+           that.state.week_expences[d.getDay()] = get_all_prices.sum('price');
 
 
-           this.setState({
+           that.setState({
             items:items_array,
             today_expenses:get_all_prices.sum('price'),
-            week_expences:this.state.week_expences,
+            week_expences:that.state.week_expences,
             showAlert:false,
           });
           
 
-          if(items_array.sum('price') >  this.state.today_limit )
+          if(items_array.sum('price') >  that.state.today_limit )
           {
             color = "red";
           }
@@ -674,22 +662,61 @@ class Main extends React.Component
             color = "green";
           }
 
-          if(this.state.items.length == 0)
+          if(that.state.items.length == 0)
           {
-            this.setState({
+            that.setState({
               no_items:true,
             })
           }
 
         
 
-          AsyncStorage.setItem('items',JSON.stringify(this.state.items)); 
-          AsyncStorage.setItem('yesterday_expence',JSON.stringify(this.state.today_expenses));
+          AsyncStorage.setItem('items',JSON.stringify(that.state.items)); 
+          AsyncStorage.setItem('yesterday_expence',JSON.stringify(that.state.today_expenses));
+
+       
 
 
 
-          return this.setState({above_limit:color})
+           that.setState({above_limit:color})
+        
+        
+        
+
+
         }
+
+        },2)
+       
+        
+    
+      }
+
+      _removeFromStorage = async ()=>{
+          
+          let items_array = this.state.items;
+          let index = this.state.chosen_item_index;
+
+          if(items_array[index].color == "orange")
+          {
+            let get_over_allFoodExpeneces = await AsyncStorage.getItem('overAll_FoodExpeneces');         
+            let EQ = parseInt(get_over_allFoodExpeneces) - parseInt(items_array[index].price); 
+            AsyncStorage.setItem('overAll_FoodExpeneces',JSON.stringify(EQ))
+          }
+  
+          if(items_array[index].color == "#3387ff")
+          {
+            let get_over_all_TransportationExpeneces = await AsyncStorage.getItem('overAll_transportationExpeneces');
+            let EQ = parseInt(get_over_all_TransportationExpeneces) - parseInt(items_array[index].price)
+            AsyncStorage.setItem('overAll_transportationExpeneces',JSON.stringify(EQ))
+          }
+  
+          if(items_array[index].color == "red")
+          {
+            let get_over_allentertainment = await AsyncStorage.getItem('overAll_entertainmentExpeneces');
+            let EQ = parseInt(get_over_allentertainment) - parseInt(items_array[index].price)
+            AsyncStorage.setItem('overAll_entertainmentExpeneces',JSON.stringify(EQ))
+          }
       }
 
       _addItem = async () => {
@@ -1329,34 +1356,13 @@ class Main extends React.Component
            this.setState({showAlert:false})
           }}
           onConfirmPressed={() => {
-           this._removeItem()
+           return this._removeItem();
           }}
           titleStyle={{fontFamily:"Cairo_Bold"}}
           messageStyle={{fontFamily:"Cairo_Regular"}}
           cancelButtonTextStyle={{fontFamily:"Cairo_Regular"}}
           confirmButtonTextStyle={{fontFamily:"Cairo_Regular"}}
         />
-
-        <AwesomeAlert
-          show={this.state.error}
-          showProgress={false}
-          title="AwesomeAlert"
-          message="I have a message for you!"
-          closeOnTouchOutside={true}
-          closeOnHardwareBackPress={false}
-          showCancelButton={true}
-          showConfirmButton={true}
-          cancelText="No, cancel"
-          confirmText="Yes, delete it"
-          confirmButtonColor="#DD6B55"
-          onCancelPressed={() => {
-            this.hideAlert();
-          }}
-          onConfirmPressed={() => {
-            this.hideAlert();
-          }}
-        />
-
 
 
       <DialogInput isDialogVisible={this.state.isDialogVisible}
