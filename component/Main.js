@@ -39,7 +39,8 @@ import { Container,
 
 import * as Font from 'expo-font';
 import { Ionicons , FontAwesome5 , MaterialCommunityIcons , Octicons} from '@expo/vector-icons';
-import { LineChart } from "react-native-chart-kit";
+import { LineChart} from "react-native-chart-kit";
+import { PieChart } from 'react-native-svg-charts'
 import { SwipeListView } from 'react-native-swipe-list-view'; /** Delete this packiage */
 import AwesomeAlert from 'react-native-awesome-alerts';
 import DialogInput from 'react-native-dialog-input';
@@ -55,17 +56,7 @@ import Constants from 'expo-constants';
 const screenWidth = Dimensions.get("window").width/1.1;
 
 
-const data = {
-  labels: ["Su", "Mo", "Tu", "We", "Th", "Fr","Sa"],
-  datasets: [
-    {
-      data: [20, 45, 28, 80, 99, 43 , 5],
-      color: (opacity = 2) => `rgba(0, 100, 0, ${opacity})`, // optional
-      strokeWidth: 2 // optional
-    }
-  ],
- // legend: ["Rainy Days", "Sunny Days", "Snowy Days"] // optional
-};
+
 
 const chartConfig = {
   backgroundGradientFrom: "#228B22",
@@ -115,6 +106,10 @@ i18n.translations = {
    cancel_expeneces:"cancel",
    submit_expeneces:'save',
    err_msg:'Please At least add the title',
+   transportation:"Transportation",
+   entertainment:"Entertainment",
+   food:"Food",
+   where_expencise_go:"Where Expencise Go",
 
    
 
@@ -155,6 +150,11 @@ i18n.translations = {
    cancel_expeneces:"الغاء",
    submit_expeneces:'حفظ',
    err_msg:'الرجاء اضافة العنوان على الاقل',
+   transportation:"مواصلات",
+   entertainment:"الترفيه",
+   food:"اكل",
+   where_expencise_go:"احصائيات",
+
   },
 };
 // Set the locale once at the beginning of your app.
@@ -204,6 +204,7 @@ class Main extends React.Component
         expoPushToken: '',
         notification: {},
         appState: AppState.currentState,
+        
         
 
 
@@ -726,6 +727,24 @@ class Main extends React.Component
      
       render() {
 
+        const data = [
+           {"id":1,"image":"https://images-na.ssl-images-amazon.com/images/I/81MwSzttarL._SL1500_.jpg",'name':"tuna",'note':"bring 10 cans of tuna please :)","price":10,'amout':10,"icon":"pizza-slice","color":"orange"},
+            {"id":3,"image":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Red_Apple.jpg/661px-Red_Apple.jpg",'name':"رايح على الجيم",'note':"Bring 1Kg of Apples","price":30,'amout':1,"icon":"bus-alt","color":"#3387ff"},
+            {"id":6,"image":"https://www.bbcgoodfood.com/sites/default/files/recipe-collections/collection-image/2013/05/spaghetti-puttanesca_1.jpg",'name':"احظر فلم قوي ",'note':"4 Pices of Pasta","price":2,'amout':4,"icon":"bowling-ball","color":"red"},
+        ]
+        const randomColor = () => ('#' + ((Math.random() * 0xffffff) << 0).toString(16) + '000000').slice(0, 7)
+        const pieData = data
+            .filter((value) => value.id > 0)
+            .map((value, index) => ({
+                value:value.price,
+                svg: {
+                    fill: value.color,
+                    onPress: () => console.log('press', index),
+                },
+                key: `pie-${index}`,
+            }))
+
+
         if (!this.state.isReady) {
           return <AppLoading />;
         }
@@ -1017,9 +1036,66 @@ class Main extends React.Component
               height={220}
               chartConfig={chartConfig}
             />
-            </Card>   
+
+
+
+            </Card>
+
+            <View style={{flex:1,flexDirection:"row"}}>
+                <Text style={{fontFamily: 'Cairo_SemiBold',flex:1,alignSelf:"flex-start"}}>
+                        {i18n.t('where_expencise_go')}
+                </Text>
+                {/* <Text style={{fontFamily: 'Cairo_Regular',color:"gray",fontSize:14,marginLeft:"25%"}}>
+                  {i18n.t('avg')}:${ this.state.avg_week_expeneces }
+                </Text> */}
+            </View>
+
+          <Card style={{flexWrap:"wrap",flexDirection:"row" , padding:"5%"}}>
+            
+            <PieChart outerRadius={"1%"} innerRadius={"100%"} animate={true} animationDuration={1000} style={{ height: 100  , width: 100 }} data={pieData} />
+
+            <View style={{flex:1,flexWrap:"wrap"}}>
+               
+                <TouchableOpacity style={{margin:"2%",padding:5,backgroundColor:"orange",borderRadius:12,flexDirection:"row"}}>
+                  <FontAwesome5  name={'pizza-slice'} size={12} style={{color:"#fff"}} />
+              <Text style={{fontFamily:"Cairo_SemiBold",color:"#fff",fontSize:8,margin:"2%"}}> {i18n.t('food')}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={{margin:"2%",padding:5,backgroundColor:"#3387ff",borderRadius:12,flexDirection:"row"}}>
+                  <FontAwesome5  name={'bus-alt'} size={12} style={{color:"#fff"}} />
+                  <Text style={{fontFamily:"Cairo_SemiBold",color:"#fff",fontSize:8,margin:"2%"}}> {i18n.t('transportation')}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={{margin:"2%",padding:5,backgroundColor:"red",borderRadius:12,flexDirection:"row"}}>
+                  <FontAwesome5  name={'bowling-ball'} size={12} style={{color:"#fff"}} />
+                  <Text style={{fontFamily:"Cairo_SemiBold",color:"#fff",fontSize:8,margin:"2%"}}> {i18n.t('entertainment')}</Text>
+                </TouchableOpacity>
+              
+            </View>
+
+            <View >
+               
+              <Text style={{fontFamily:"Cairo_SemiBold",fontSize:12,color:"gray"}}>{i18n.t('transportation')}:</Text>
+              <Text style={{fontFamily:"Cairo_Bold",fontSize:12}}>$50</Text>
+
+              <Text style={{fontFamily:"Cairo_SemiBold",fontSize:12,color:"gray"}}>{i18n.t('entertainment')}:</Text>
+              <Text style={{fontFamily:"Cairo_Bold",fontSize:12}}>$10</Text>
+
+              <Text style={{fontFamily:"Cairo_SemiBold",fontSize:12,color:"gray"}}>{i18n.t('food')}:</Text>
+              <Text style={{fontFamily:"Cairo_Bold",fontSize:12}}>$20</Text>
+
+
+             
+           </View>
+
+
+
+            </Card>
+              
           
            </View>
+
+           
 
 
             </Content>
