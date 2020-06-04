@@ -15,11 +15,3 @@ app to track your daily/weekly and overall  expenses
 * React Native
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-
-
-https://ibb.co/cr4551t
-https://ibb.co/HNqXD95
-https://ibb.co/LvRMrLf
-https://ibb.co/qkh8Yxy
-https://ibb.co/z2yVh50
-https://ibb.co/QMH1gzK
