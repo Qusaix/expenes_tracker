@@ -14,13 +14,10 @@ import { Container,
    CardItem , 
    List , 
    ListItem , 
-   Thumbnail , 
    Fab , 
    Form , 
    Item , 
-   Label , 
    Input ,
-   Textarea,
    
 
   } from 'native-base';
@@ -30,9 +27,6 @@ import { Container,
     Dimensions ,
     TouchableOpacity ,
     AsyncStorage ,
-    Image ,
-    Vibration,
-    Platform,
     AppState
            
   } from "react-native";
@@ -175,15 +169,7 @@ class Main extends React.Component
         this.state = {
           isReady: false,
           active:false,
-          items:[
-            // {"id":1,"image":"https://images-na.ssl-images-amazon.com/images/I/81MwSzttarL._SL1500_.jpg",'name':"tuna",'note':"bring 10 cans of tuna please :)","price":50,'amout':10,"icon":"pizza-slice","color":"orange"},
-            // {"id":2,"image":"https://hips.hearstapps.com/vidthumb/images/delish-u-rice-2-1529079587.jpg",'name':"Rice",'note':"Bring 10KGs of Rice","price":70,'amout':1,"icon":"pizza-slice","color":"orange"},
-            // {"id":3,"image":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Red_Apple.jpg/661px-Red_Apple.jpg",'name':"رايح على الجيم",'note':"Bring 1Kg of Apples","price":5,'amout':1,"icon":"bus-alt","color":"#3387ff"},
-            // {"id":4,"image":"https://images-na.ssl-images-amazon.com/images/I/71qyzy9QnML._SL1500_.jpg",'name':"Oats ",'note':"One Can of Oats","price":15,'amout':5,"icon":"pizza-slice","color":"orange"},
-            // {"id":5,"image":"https://images-na.ssl-images-amazon.com/images/I/71xnxlsfqOL._AC_SX425_.jpg",'name':"Protien ",'note':"ON Marka","price":25,'amout':1,"icon":"pizza-slice","color":"orange"},
-            // {"id":6,"image":"https://www.bbcgoodfood.com/sites/default/files/recipe-collections/collection-image/2013/05/spaghetti-puttanesca_1.jpg",'name':"احظر فلم قوي ",'note':"4 Pices of Pasta","price":20,'amout':4,"icon":"bowling-ball","color":"red"},
-            // {"id":7,"image":"https://static.webteb.net/images/content/ramadanrecipe_recipe_5_719.jpg",'name':"ملوخيه ",'note':"اربعه كيلو","price":25,'amout':4,"icon":"pizza-slice","color":"orange"},
-        ],
+          items:[],
         today_expenses:0,
         today_limit:100, 
         above_limit:"green",
@@ -633,7 +619,9 @@ class Main extends React.Component
  
 
        
-         
+          /**
+         * REMOVE ITEM FROM ITEM LIST 
+         */
              
         if(check_item === -1) 
         { 
@@ -914,12 +902,7 @@ class Main extends React.Component
      
       render() {
 
-        const data = [
-           {"id":1,"image":"https://images-na.ssl-images-amazon.com/images/I/81MwSzttarL._SL1500_.jpg",'name':"tuna",'note':"bring 10 cans of tuna please :)","price":10,'amout':10,"icon":"pizza-slice","color":"orange"},
-            {"id":3,"image":"https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Red_Apple.jpg/661px-Red_Apple.jpg",'name':"رايح على الجيم",'note':"Bring 1Kg of Apples","price":30,'amout':1,"icon":"bus-alt","color":"#3387ff"},
-            {"id":6,"image":"https://www.bbcgoodfood.com/sites/default/files/recipe-collections/collection-image/2013/05/spaghetti-puttanesca_1.jpg",'name':"احظر فلم قوي ",'note':"4 Pices of Pasta","price":2,'amout':4,"icon":"bowling-ball","color":"red"},
-        ]
-        const randomColor = () => ('#' + ((Math.random() * 0xffffff) << 0).toString(16) + '000000').slice(0, 7)
+       
         const pieData = this.state.over_all_info
             .filter((value) => value.id > 0)
             .map((value, index) => ({
