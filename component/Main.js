@@ -231,6 +231,8 @@ class Main extends React.Component
       overAll_transportationExpeneces:0,
       overAll_entertainmentExpeneces:0,
       analytics:false,
+      minus_price:0,
+      minus_color:'',
 
 
         
@@ -615,18 +617,23 @@ class Main extends React.Component
         const check_item = items_array.indexOf(index)
         let color;
 
+        
           /**
          * REMOVE ITEM PRICE FROM OVERALL EXPENECES 
          */
-        let that = this;
-        setTimeout(function(){
-          that._removeFromStorage();
-        },1)
 
+        this.setState({
+          minus_price:items_array[index].price,
+          minus_color:items_array[index].color
+        })
 
+        this._removeFromStorage();
+       
 
-        setTimeout(function(){
+ 
 
+       
+         
              
         if(check_item === -1) 
         { 
@@ -642,18 +649,18 @@ class Main extends React.Component
 
         }
            let d = new Date();
-           that.state.week_expences[d.getDay()] = get_all_prices.sum('price');
+           this.state.week_expences[d.getDay()] = get_all_prices.sum('price');
 
 
-           that.setState({
+           this.setState({
             items:items_array,
             today_expenses:get_all_prices.sum('price'),
-            week_expences:that.state.week_expences,
+            week_expences:this.state.week_expences,
             showAlert:false,
           });
           
 
-          if(items_array.sum('price') >  that.state.today_limit )
+          if(items_array.sum('price') >  this.state.today_limit )
           {
             color = "red";
           }
@@ -662,23 +669,23 @@ class Main extends React.Component
             color = "green";
           }
 
-          if(that.state.items.length == 0)
+          if(this.state.items.length == 0)
           {
-            that.setState({
+            this.setState({
               no_items:true,
             })
           }
 
         
 
-          AsyncStorage.setItem('items',JSON.stringify(that.state.items)); 
-          AsyncStorage.setItem('yesterday_expence',JSON.stringify(that.state.today_expenses));
+          AsyncStorage.setItem('items',JSON.stringify(this.state.items)); 
+          AsyncStorage.setItem('yesterday_expence',JSON.stringify(this.state.today_expenses));
 
        
 
 
 
-           that.setState({above_limit:color})
+           this.setState({above_limit:color})
         
         
         
@@ -686,7 +693,7 @@ class Main extends React.Component
 
         }
 
-        },2)
+      
        
         
     
@@ -694,28 +701,37 @@ class Main extends React.Component
 
       _removeFromStorage = async ()=>{
           
-          let items_array = this.state.items;
-          let index = this.state.chosen_item_index;
+          let get_over_allFoodExpeneces = await AsyncStorage.getItem('overAll_FoodExpeneces');
+          let get_over_all_TransportationExpeneces = await AsyncStorage.getItem('overAll_transportationExpeneces');
+          let get_over_allentertainment = await AsyncStorage.getItem('overAll_entertainmentExpeneces');
+          let color = this.state.minus_color;
+          let minus_price = this.state.minus_price;
+        
 
-          if(items_array[index].color == "orange")
+
+          if(color == "orange")
           {
-            let get_over_allFoodExpeneces = await AsyncStorage.getItem('overAll_FoodExpeneces');         
-            let EQ = parseInt(get_over_allFoodExpeneces) - parseInt(items_array[index].price); 
+            let EQ = parseInt(get_over_allFoodExpeneces) - parseInt(minus_price); 
             AsyncStorage.setItem('overAll_FoodExpeneces',JSON.stringify(EQ))
           }
   
-          if(items_array[index].color == "#3387ff")
+          if(color == "#3387ff")
           {
-            let get_over_all_TransportationExpeneces = await AsyncStorage.getItem('overAll_transportationExpeneces');
-            let EQ = parseInt(get_over_all_TransportationExpeneces) - parseInt(items_array[index].price)
+            let EQ = parseInt(get_over_all_TransportationExpeneces) - parseInt(minus_price)
             AsyncStorage.setItem('overAll_transportationExpeneces',JSON.stringify(EQ))
           }
   
-          if(items_array[index].color == "red")
+          if(color == "red")
           {
-            let get_over_allentertainment = await AsyncStorage.getItem('overAll_entertainmentExpeneces');
-            let EQ = parseInt(get_over_allentertainment) - parseInt(items_array[index].price)
+            let EQ = parseInt(get_over_allentertainment) - parseInt(minus_price)
             AsyncStorage.setItem('overAll_entertainmentExpeneces',JSON.stringify(EQ))
+          }
+
+          if(get_over_allFoodExpeneces == 0 && get_over_all_TransportationExpeneces == 0 && get_over_allentertainment == 0)
+          {
+            this.setState({
+              analytics:true,
+            })
           }
       }
 
