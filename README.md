@@ -1,4 +1,4 @@
-# expenes_tracker
+# Expenes Tracker
 app to track your daily/weekly and overall  expenses 
 
 # Screenshots
