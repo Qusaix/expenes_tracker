@@ -32,7 +32,7 @@ import { Container,
   } from "react-native";
 
 import * as Font from 'expo-font';
-import { Ionicons , FontAwesome5 , MaterialCommunityIcons , Octicons , AntDesign } from '@expo/vector-icons';
+import { Ionicons , FontAwesome5 , MaterialCommunityIcons , Octicons , AntDesign , MaterialIcons} from '@expo/vector-icons';
 import { LineChart} from "react-native-chart-kit";
 import { PieChart } from 'react-native-svg-charts'
 import { SwipeListView } from 'react-native-swipe-list-view'; /** Delete this packiage */
@@ -1052,7 +1052,8 @@ class Main extends React.Component
             >
               <Left>
                 <Button transparent>
-                  <Icon name='wallet' />
+                  {/* <Icon name='wallet' /> */}
+                  <MaterialIcons name={'menu'} size={30} style={{color:"#ffff"}} onPress={()=>{return this.props.navigation.openDrawer();}} />
                 </Button>
               </Left>
               <Body>
