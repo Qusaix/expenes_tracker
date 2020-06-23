@@ -1,6 +1,6 @@
 import * as React from "react";
 import { View , StyleSheet } from 'react-native';
-import { MaterialIcons ,  AntDesign  , FontAwesome5 , Ionicons} from "@expo/vector-icons";
+import { MaterialIcons ,  AntDesign  , FontAwesome5 , Ionicons , Octicons} from "@expo/vector-icons";
 import
 { 
         Container,
@@ -27,8 +27,52 @@ class History extends React.Component
     constructor(){
         super();
         this.state={
-            history:[],
+            history:[
+                {
+                    "id":1,
+                    'date':"24 May 2020",
+                    'items':
+                    [
+                        {
+                            "name":"pizza",
+                            'price':50,
+                            'icon':'pizza-slice',
+                            'color':'orange'
+                        },
+                        {
+                            "name":"Amman",
+                            'price':50,
+                            'icon':'bus-alt',
+                            'color':'#3387ff'
+                        },
+
+
+                    ]
+                },
+                {
+                    "id":2,
+                    'date':"25 May 2020",
+                    'items':
+                    [
+                        {
+                            "name":"ملوخية",
+                            'price':2,
+                            'icon':'pizza-slice',
+                            'color':'orange'
+                        },
+                        {
+                            "name":"فلم جديد",
+                            'price':20,
+                            'icon':'bowling-ball',
+                            'color':'red'
+                        },
+
+
+                    ]
+                }
+            ],
             about_screen:false,
+
 
 
         }
@@ -59,6 +103,41 @@ class History extends React.Component
 
    render()
    {
+
+    if(this.state.history.length == 0)
+    {
+        return(
+            <Container>
+
+            <Header
+            androidStatusBarColor={'green'}
+            style={{backgroundColor:"green"}}
+            >
+             <Left>
+                 <MaterialIcons name={'menu'} size={30} style={{color:"#ffff"}} onPress={()=>{return this.props.navigation.openDrawer();}} />
+             </Left>
+
+             <Body>
+             <Title style={{fontFamily:"Cairo_Bold"}}>History</Title>
+             </Body>
+
+             <Right>
+             <AntDesign name="exclamationcircleo" size={24} color="#ffff" onPress={()=>{ return this.setState({about_screen:true}) }} />
+             </Right>
+
+            </Header>
+
+            <View style={Style.no_history_contaner}>
+                <Octicons name={'inbox'} size={60} color={"gray"} />
+                <Text style={Style.no_history_text}>
+                   There is No History Yet
+                </Text>
+            </View>
+
+            </Container>
+        )
+    }
+
        return(
            <Container>
 
@@ -87,91 +166,41 @@ class History extends React.Component
                    <Card>
 
                     <Content style={Style.maninContaner}>
-                        <Text style={Style.dayTitle}>
-                            24 May 2020
-                        </Text>
 
-                           {/** The items view */}
+                        { this.state.history.map((day)=>
+                        {
+                            return(
+                            <View>
+                              <Text style={Style.dayTitle}>
+                                    { day.date }
+                              </Text>
+                             { day.items.map((item)=>{
+                                 return(
+                                    <View style={{flex:1,flexDirection:"row",padding:"2%"}}>
+                                    <Left style={{flex:1,flexDirection:"row"}}>
+                                        <FontAwesome5  name={item.icon} size={12} style={{color:item.color,marginRight:"5%"}} />
+                                 <Text style={Style.ItemsText}>  {item.name} </Text>
+                                    </Left>
+    
+                                    <Right>
+                                        <FontAwesome5  name={'money-bill'} size={12} style={{color:"#000"}} />
+                                        <Text style={Style.ItemsText}> ${ item.price }</Text>
+                                    </Right>
+                                </View>
+                                 )
+                             }) }   
 
-                            <View style={{flex:1,flexDirection:"row",padding:"2%"}}>
-                                <Left style={{flex:1,flexDirection:"row"}}>
-                                    <FontAwesome5  name={'pizza-slice'} size={12} style={{color:"orange",marginRight:"5%"}} />
-                                    <Text style={Style.ItemsText}>Pizza</Text>
-                                </Left>
 
-                                <Right>
-                                    <FontAwesome5  name={'money-bill'} size={12} style={{color:"#000"}} />
-                                    <Text style={Style.ItemsText}> $55</Text>
-                                </Right>
+
                             </View>
+                           
+                           
+                            
+                            )
+                        }) }
 
-                            <View style={{flex:1,flexDirection:"row",padding:"2%"}}>
-                                <Left style={{flex:1,flexDirection:"row"}} >
-                                    <FontAwesome5  name={'bus-alt'} size={12} style={{color:"#3387ff",marginRight:"5%"}} />
-                                    <Text style={Style.ItemsText}> Going To Amman </Text>
-                                </Left>
-
-                                <Right>
-                                    <FontAwesome5  name={'money-bill'} size={12} style={{color:"#000"}} />
-                                    <Text style={Style.ItemsText}> $5</Text>
-                                </Right>
-                            </View>
-
-                            <View style={{flex:1,flexDirection:"row",padding:"2%"}}>
-                                <Left style={{flex:1,flexDirection:"row"}} >
-                                    <FontAwesome5  name={'bowling-ball'} size={12} style={{color:"red",marginRight:"5%"}} />
-                                    <Text style={Style.ItemsText}> Watching New Movie </Text>
-                                </Left>
-
-                                <Right>
-                                    <FontAwesome5  name={'money-bill'} size={12} style={{color:"#000"}} />
-                                    <Text style={Style.ItemsText}> $25</Text>
-                                </Right>
-                            </View>
-
-                            <Text style={Style.dayTitle}>
-                            23 May 2020
-                        </Text>
-
-                           {/** The items view */}
-
-                            <View style={{flex:1,flexDirection:"row",padding:"2%"}}>
-                                <Left style={{flex:1,flexDirection:"row"}}>
-                                    <FontAwesome5  name={'pizza-slice'} size={12} style={{color:"orange",marginRight:"5%"}} />
-                                    <Text style={Style.ItemsText}>Pizza</Text>
-                                </Left>
-
-                                <Right>
-                                    <FontAwesome5  name={'money-bill'} size={12} style={{color:"#000"}} />
-                                    <Text style={Style.ItemsText}> $55</Text>
-                                </Right>
-                            </View>
-
-                            <View style={{flex:1,flexDirection:"row",padding:"2%"}}>
-                                <Left style={{flex:1,flexDirection:"row"}} >
-                                    <FontAwesome5  name={'bus-alt'} size={12} style={{color:"#3387ff",marginRight:"5%"}} />
-                                    <Text style={Style.ItemsText}> Going To Amman </Text>
-                                </Left>
-
-                                <Right>
-                                    <FontAwesome5  name={'money-bill'} size={12} style={{color:"#000"}} />
-                                    <Text style={Style.ItemsText}> $5</Text>
-                                </Right>
-                            </View>
-
-                            <View style={{flex:1,flexDirection:"row",padding:"2%"}}>
-                                <Left style={{flex:1,flexDirection:"row"}} >
-                                    <FontAwesome5  name={'bowling-ball'} size={12} style={{color:"red",marginRight:"5%"}} />
-                                    <Text style={Style.ItemsText}> Watching New Movie </Text>
-                                </Left>
-
-                                <Right>
-                                    <FontAwesome5  name={'money-bill'} size={12} style={{color:"#000"}} />
-                                    <Text style={Style.ItemsText}> $25</Text>
-                                </Right>
-                            </View>
-                          
-
+                       
+                        
                            {/** The items view end */}  
 
                        
@@ -221,6 +250,16 @@ const Style = StyleSheet.create({
     dayTitle:{
         fontSize:15,
         fontFamily:"Cairo_Bold",
+    },
+    no_history_contaner:{
+        flex:1,
+        justifyContent:"center",
+        alignItems:"center",
+    },
+    no_history_text:{
+        fontSize:25,
+        color:"gray",
+        fontFamily:"Cairo_Bold"
     }
 
 })
