@@ -38,8 +38,7 @@ import { PieChart } from 'react-native-svg-charts'
 import { SwipeListView } from 'react-native-swipe-list-view'; /** Delete this packiage */
 import AwesomeAlert from 'react-native-awesome-alerts';
 import DialogInput from 'react-native-dialog-input';
-import * as Localization from 'expo-localization';
-import i18n from 'i18n-js';
+import i18n from '../translator/translator.js';
 import Onboarding from 'react-native-onboarding-swiper';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
@@ -62,103 +61,6 @@ const chartConfig = {
   barPercentage: 0.5,
   useShadowColorFromDataset: true // optional
 };
-
-// Set the key-value pairs for the different languages you want to support.
-i18n.translations = {
-  en: { 
-   back: 'Back',
-   name: 'Name' ,
-   note: 'Note',
-   price: 'Price',
-   add: 'Add',
-   expencese: 'Expencese',
-   today_expenses: 'Today Expencise',
-   expencese_counter:'Expencese',
-   less_then:'Less then',
-   today_items_list:'Today Items List',
-   no_items:'You Have No items Today',
-   you_can_add:'You Can Add Throw the Plus Sign',
-   week_expencises:'Week Expencises',
-   warning:"Warning!",
-   message:"are you sure you want to delete this item ?",
-   cancelText:"No, cancel",
-   confirmText:"Yes, delete it",
-   important:'Important!',
-   message_add_budget:'Please Add Your Daly Budget',
-   ex:"ex.50",
-   submit:"SUBMIT",
-   cancel:"CANCEL",
-   avg:"avg daily exp",
-   tut_welcome:"Welcome To Expenece Tracker!",
-   tut_welcome_sub:"In this app we will help you to track your daly expeneces",
-   tut_how_to_add_items:"How To Add item\'s",
-   tut_how_to_add_items_sub:'it\'s very simpel just press on the plus buttons \n you will find many icons every icon represent something \n ex.bus icon repeset transportation etc',
-   tut_change_exp:'How To Change Your Daly Expeneces Limit',
-   tut_change_exp_sub:'we have added the daly expeneces limit help you save some money you can change the limit any time you want throw the presing the gear icon in the to right the screen',
-   next:"Next",
-   skip:'Skip',
-   cancel_expeneces:"cancel",
-   submit_expeneces:'save',
-   err_msg:'Please At least add the title',
-   transportation:"Transportation",
-   entertainment:"Entertainment",
-   food:"Food",
-   where_expencise_go:"Analytics",
-   no_data_yet:"No Enough Data Yet"
-
-   
-
-
-  },
-  ar: {
-   back: 'رجوع',
-   name: 'عنوان' ,
-   note: 'ملاحظه',
-   price: 'السعر',
-   add: 'اضافة',
-   expencese: 'التكاليف',
-   today_expenses: 'تكالييف اليوم',
-   expencese_counter:'التكاليف',
-   less_then:'مصروف اليوم',
-   today_items_list:'قائمة تكاليف اليوم',
-   no_items:'لا يوجد اي عنصر اليوم',
-   you_can_add:'بمكانك اضافة عنصر جديد عن طريق علامة الزائد',
-   week_expencises:'تكاليف الاسبوع',
-   warning:"تحذير!",
-   message:"هل تريد حذف العنصر ؟",
-   cancelText:"لأ , اريد الالغاء",
-   confirmText:"نعم , اريد",
-   important:'مهم',
-   message_add_budget:'الرجاء اضافة ميزانتك اليوميه',
-   ex:"مثال.50",
-   submit:"اضافة",
-   cancel:"الغاء",
-   avg:"متوسط صرفك",
-   tut_welcome:"مرحبا بك  في تطبيق تكاليف",
-   tut_welcome_sub:"في هذا التطبيق نساعدك في تتبع مصاريفك لتوفير اكبر قدر من المال",
-   tut_how_to_add_items:"طريقة الاضافة",
-   tut_how_to_add_items_sub:'طريقة الاضافة جدا بسيطه فقط عليك النقر على اشاره الزائد ثم تختار نوع الصرف مثلا ايقونت البيتزا تدل على الاكل ',
-   tut_change_exp:'طريقة تغير حد مصروفك اليومي',
-   tut_change_exp_sub:'لقد اضفنا حد المصروف اليومي لمساعدك في توفير اكبر قدر من المال ب امكانك تغير الحد عن طريق النقر على ايقونت العدادات',
-   next:"التالي",
-   skip:'اختصر',
-   cancel_expeneces:"الغاء",
-   submit_expeneces:'حفظ',
-   err_msg:'الرجاء اضافة العنوان على الاقل',
-   transportation:"مواصلات",
-   entertainment:"الترفيه",
-   food:"اكل",
-   where_expencise_go:"احصائيات",
-   no_data_yet:"لا يوجد معلومات كافيه"
-
-
-  },
-};
-// Set the locale once at the beginning of your app.
-i18n.locale = Localization.locale;
-// When a value is missing from a language it'll fallback to another language with the key present.
-i18n.fallbacks = true;
-
 
 
 
@@ -398,7 +300,7 @@ class Main extends React.Component
         let history_element = {'id':0,'date':null,'items':[]};
 
         /** check if wrere in the same day or not */
-       if( d.getDay() !== 55 )
+       if( d.getDay() !== today_is )
        {
           if( history !== null )
           {
@@ -633,8 +535,7 @@ class Main extends React.Component
                 items:json,
               })
 
-
-                
+            
               }
             } catch (error) {
               // Error retrieving data
@@ -803,11 +704,11 @@ class Main extends React.Component
 
       _addItem = async () => {
 
-        if(this.state.new_item_name == "")
+        if(this.state.new_item_name == "" || this.state.new_item_price == "")
         {
           
         
-          alert(i18n.t('err_msg'))
+          alert(i18n.t('err_msg')) 
           
           return;
         }
