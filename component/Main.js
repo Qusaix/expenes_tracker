@@ -219,6 +219,7 @@ class Main extends React.Component
       analytics:false,
       minus_price:0,
       minus_color:'',
+      history:[],
 
 
         
@@ -308,9 +309,7 @@ class Main extends React.Component
           }
 
 
-
-
-        
+         
 
       /**  GET THE APP STATE  */ 
 
@@ -390,7 +389,64 @@ class Main extends React.Component
 
       }
 
+      _addToHistory =  async ( items )=>{
+
+        let today_is = await AsyncStorage.getItem('day');
+        let history = await AsyncStorage.getItem('history');
+        const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        let d = new Date();
+        let history_element = {'id':0,'date':null,'items':[]};
+
+        /** check if wrere in the same day or not */
+       if( d.getDay() !== 55 )
+       {
+          if( history !== null )
+          {
+            
+            try
+            {
+            
+              
+              history_items = JSON.parse( history );
+
+              history_element.id = Math.random() * Math.floor(10000);
+              history_element.date = d.getDate() - 1 +" "+ months[d.getMonth()] +" "+ d.getFullYear();
+              history_element.items = items;
+
+
+              history_items.push( history_element );
+
+
+              AsyncStorage.setItem('history',JSON.stringify(history_items));
+
+
+
+
+              
+
+            }
+            catch
+            {
+
+            }
+
+          }
+          else
+          {
+   
+           AsyncStorage.setItem('history',JSON.stringify([]));
+   
+          }
+
+       }
+      
+
+
+
+      }
+
       _create_user_info = async ()=>{
+        
         
         
         
@@ -571,10 +627,14 @@ class Main extends React.Component
               const value = await AsyncStorage.getItem('items');
               const json = JSON.parse(value); // this is how you get back the array stored
 
+           
               if (json !== null) {
                 this.setState({
                 items:json,
               })
+
+
+                
               }
             } catch (error) {
               // Error retrieving data
@@ -582,12 +642,30 @@ class Main extends React.Component
         }
         else
         {
-          
-         AsyncStorage.setItem('items',JSON.stringify([]));
 
-           this.setState({
-            items:[]
-          })
+          try
+          {
+            const value = await AsyncStorage.getItem('items');
+            const json = JSON.parse(value);
+
+
+             /** ADD TO HISTORY */
+             await this._addToHistory( json );
+
+
+            AsyncStorage.setItem('items',JSON.stringify([]));
+
+            this.setState({
+             items:[]
+           })
+
+          }
+          catch
+          {
+
+          }
+          
+        
         }
       
     

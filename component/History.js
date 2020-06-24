@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View , StyleSheet } from 'react-native';
+import { View , StyleSheet, AsyncStorage } from 'react-native';
 import { MaterialIcons ,  AntDesign  , FontAwesome5 , Ionicons , Octicons} from "@expo/vector-icons";
 import
 { 
@@ -34,12 +34,14 @@ class History extends React.Component
                     'items':
                     [
                         {
+                            "id":1,
                             "name":"pizza",
                             'price':50,
                             'icon':'pizza-slice',
                             'color':'orange'
                         },
                         {
+                            "id":2,
                             "name":"Amman",
                             'price':50,
                             'icon':'bus-alt',
@@ -55,12 +57,14 @@ class History extends React.Component
                     'items':
                     [
                         {
+                            "id":3,
                             "name":"ملوخية",
                             'price':2,
                             'icon':'pizza-slice',
                             'color':'orange'
                         },
                         {
+                            "id":4,
                             "name":"فلم جديد",
                             'price':20,
                             'icon':'bowling-ball',
@@ -98,6 +102,32 @@ class History extends React.Component
             
             ...Ionicons.font,
           });
+
+          this._getHistory();
+
+
+
+    }
+
+    _getHistory = async () =>{
+
+        const history_items = await AsyncStorage.getItem('history');
+        
+
+        try
+        {
+            let convert_to_array = JSON.parse( history_items );
+
+            console.warn( convert_to_array );
+
+             return this.setState({
+                history:convert_to_array
+            })
+        }
+        catch
+        {
+
+        }
 
     }
 
@@ -170,13 +200,13 @@ class History extends React.Component
                         { this.state.history.map((day)=>
                         {
                             return(
-                            <View>
+                            <View key={day.id} >
                               <Text style={Style.dayTitle}>
                                     { day.date }
                               </Text>
                              { day.items.map((item)=>{
                                  return(
-                                    <View style={{flex:1,flexDirection:"row",padding:"2%"}}>
+                                    <View  key={item.id} style={{flex:1,flexDirection:"row",padding:"2%"}}>
                                     <Left style={{flex:1,flexDirection:"row"}}>
                                         <FontAwesome5  name={item.icon} size={12} style={{color:item.color,marginRight:"5%"}} />
                                  <Text style={Style.ItemsText}>  {item.name} </Text>
