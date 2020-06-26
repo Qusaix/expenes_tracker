@@ -43,7 +43,10 @@ export default {
     d_history:'History',
     no_history:'There is No History Yet',
     mas_history_title:'History',
-    mas_history:'in this screen you can see all your expenses it was added to the app ( the will update daly )'
+    mas_history:'in this screen you can see all your expenses it was added to the app ( the will update daly )',
+    about_us:"About Us",
+    created:'This App Created by Israra Team',
+    fallow:'You Can Fallow Us On Facebook To See Our Lates Apps',
  
     
     

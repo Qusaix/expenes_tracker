@@ -7,6 +7,7 @@ import i18n from '../translator/translator.js';
 
 import Main from "../component/Main.js";
 import History from "../component/History.js";
+import About from "../component/AboutUs.js"
 
 
 const Drawer = createDrawerNavigator();
@@ -54,6 +55,9 @@ export default class App extends React.Component {
           />
           <Drawer.Screen name="History" component={History}
           options={{ drawerLabel: i18n.t('d_history') , drawerIcon: ()=>{ return <FontAwesome5 name={'history'}  size={18}  style={{color:"gray"}} /> } }}
+          />
+          <Drawer.Screen name="About" component={About}
+          options={{ drawerLabel: i18n.t('about_us') , drawerIcon:()=>{ return  <FontAwesome5 name={'exclamation'}  size={18}  style={{color:"gray"}} /> }}}
           />
         </Drawer.Navigator>
       </NavigationContainer>
