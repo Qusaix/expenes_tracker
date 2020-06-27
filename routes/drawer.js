@@ -34,7 +34,7 @@ export default class App extends React.Component {
       
       
     });
-
+ 
   }
 
   render()
@@ -47,7 +47,7 @@ export default class App extends React.Component {
           labelStyle:{
             fontFamily:"Cairo_Bold"
           }
-        }}
+        }} 
         >
           <Drawer.Screen name="Home" component={Main}
            options={{ drawerLabel: i18n.t('d_home') , drawerIcon: () => { return <FontAwesome5 name={"home"} size={18} style={{color:"gray"}} /> } }}
