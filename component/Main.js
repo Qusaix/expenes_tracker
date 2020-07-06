@@ -42,6 +42,13 @@ import i18n from '../translator/translator.js';
 import Onboarding from 'react-native-onboarding-swiper';
 import * as Permissions from 'expo-permissions';
 import Constants from 'expo-constants';
+import {
+  AdMobBanner,
+  AdMobInterstitial,
+  PublisherBanner,
+  AdMobRewarded,
+  setTestDeviceIDAsync,
+} from 'expo-ads-admob';
 
 
 
@@ -1080,7 +1087,7 @@ class Main extends React.Component
                   </View>
 
                 </View>
-               
+                
               
                   <View style={{flex:1,alignItems:"center",justifyContent:"center",width:"50%"}}>
 
@@ -1099,7 +1106,7 @@ class Main extends React.Component
                   </View>
              
 
-               
+                
                
               
               </Body>
@@ -1153,7 +1160,16 @@ class Main extends React.Component
                  
           </List>
             </View>
+             <View style={{flex:1,alignItems:"center"}}>
+             <AdMobBanner
+              bannerSize="banner"
+              adUnitID="ca-app-pub-6984928475835712/1462767748" // Test ID, Replace with your-admob-unit-id
+              servePersonalizedAds // true or false
+              onDidFailToReceiveAdWithError={this.bannerError} 
+            />
+            </View>     
             
+              
 
            <View style={{margin:"2%",marginLeft:"3%"}}> 
              

@@ -4,7 +4,7 @@
   "expo": {
     "name": "MyDalyExpeneses",
     "slug": "MyDalyExpeneses",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
@@ -31,7 +31,11 @@
     ],
 
     "android": {
-      "package": "com.israr.expensesTracker"
+      "package": "com.israr.expensesTracker",
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-6984928475835712~5976727826"
+      }
+ 
       
 
     }
